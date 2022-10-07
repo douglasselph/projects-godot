@@ -12,10 +12,12 @@ void vertex() {
         VERTEX.y += height;
 }"
 
-[sub_resource type="OpenSimplexNoise" id=4]
+[sub_resource type="OpenSimplexNoise" id=6]
 
 [sub_resource type="NoiseTexture" id=5]
-noise = SubResource( 4 )
+resource_local_to_scene = true
+seamless = true
+noise = SubResource( 6 )
 
 [sub_resource type="ShaderMaterial" id=3]
 shader = SubResource( 2 )
