@@ -1,0 +1,83 @@
+[gd_scene load_steps=6 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+
+// Water #1:
+render_mode specular_toon;
+
+uniform sampler2D noise;
+uniform sampler2D normalmap;
+uniform float height_scale = 0.5;
+// Water #2:
+uniform float plane_mesh_size = 10.0;
+
+varying vec2 tex_position;
+
+// Waves:
+float wave(vec2 position){
+  position += texture(noise, position / plane_mesh_size).x * 2.0 - 1.0;
+  vec2 wv = 1.0 - abs(sin(position));
+  return pow(1.0 - pow(wv.x * wv.y, 0.65), 4.0);
+}
+
+// Water:
+float height(vec2 position, float time) {
+        // vec2 offset = 0.01 * cos(position + time);
+        // return texture(noise, position / plane_mesh_size).x; // Scaling factor is based on mesh size (this PlaneMesh is 10×10).
+        // Wave:
+        // return wave(position * 0.4);
+
+        float d = wave((position + time) * 0.4) * 0.3;
+        d += wave((position - time) * 0.3) * 0.3;
+        d += wave((position + time) * 0.5) * 0.2;
+        d += wave((position - time) * 0.6) * 0.2;
+        return d;
+}
+
+void vertex() {
+        // Non-Water:
+        // tex_position = VERTEX.xz / 2.0 + 0.5;
+        // float height = texture(noise, tex_position).x;
+        // VERTEX.y += height * height_scale;
+
+        // Water:
+        vec2 pos = VERTEX.xz;
+        float k = height(pos, TIME);
+        VERTEX.y = k;
+        NORMAL = normalize(vec3(k - height(pos + vec2(0.1, 0.0), TIME), 0.1, k - height(pos + vec2(0.0, 0.1), TIME)));
+}
+
+void fragment() {
+        // NORMALMAP = texture(normalmap, tex_position).xyz;
+        // Water 2:
+        float fresnel = sqrt(1.0 - dot(NORMAL, VIEW));
+        RIM = 0.2;
+        METALLIC = 0.0;
+        ROUGHNESS = 0.01 * (1.0 - fresnel);
+        ALBEDO = vec3(0.1, 0.3, 0.5) + (0.1 * fresnel);
+}
+"
+
+[sub_resource type="OpenSimplexNoise" id=4]
+
+[sub_resource type="NoiseTexture" id=5]
+as_normalmap = true
+noise = SubResource( 4 )
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/height_scale = 0.5
+shader_param/plane_mesh_size = 10.0
+shader_param/noise = SubResource( 5 )
+
+[sub_resource type="PlaneMesh" id=3]
+material = SubResource( 2 )
+subdivide_width = 64
+subdivide_depth = 64
+
+[node name="ShaderTutorial" type="Spatial"]
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+mesh = SubResource( 3 )
+skeleton = NodePath("")

@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=2]
+
+[sub_resource type="PlaneMesh" id=1]
+
+[sub_resource type="Shader" id=6]
+code = "shader_type spatial;
+
+uniform sampler2D noise;
+
+// texture() coordinates are between 0 and 1
+// mesh coordinates are betweeen -1 and 1 because the mesh size is 2x2.
+void vertex() {
+        float height = texture(noise, VERTEX.xz / 2.0 + 0.5).x;
+        VERTEX.y += height;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=7]
+
+[sub_resource type="NoiseTexture" id=4]
+noise = SubResource( 7 )
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 6 )
+shader_param/noise = SubResource( 4 )
+
+[node name="TerrainBlock2" type="Spatial"]
+
+[node name="Spatial" type="Spatial" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="Spatial"]
+mesh = SubResource( 1 )
+material/0 = SubResource( 5 )

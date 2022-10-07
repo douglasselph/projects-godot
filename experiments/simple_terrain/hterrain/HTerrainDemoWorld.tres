@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=10 format=2]
+
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot2_albedo_bump.packed_tex" type="Texture" id=1]
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot2_normal_roughness.packed_tex" type="Texture" id=2]
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot1_normal_roughness.packed_tex" type="Texture" id=3]
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot0_albedo_bump.packed_tex" type="Texture" id=4]
+[ext_resource path="res://addons/zylann.hterrain/hterrain_texture_set.gd" type="Script" id=5]
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot3_normal_roughness.packed_tex" type="Texture" id=6]
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot1_albedo_bump.packed_tex" type="Texture" id=7]
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot0_normal_roughness.packed_tex" type="Texture" id=8]
+[ext_resource path="res://hterrain/t_terrain/HTerrainDemoWorld_slot3_albedo_bump.packed_tex" type="Texture" id=9]
+
+[resource]
+script = ExtResource( 5 )
+mode = 0
+textures = [ [ ExtResource( 4 ), ExtResource( 7 ), ExtResource( 1 ), ExtResource( 9 ) ], [ ExtResource( 8 ), ExtResource( 3 ), ExtResource( 2 ), ExtResource( 6 ) ] ]
