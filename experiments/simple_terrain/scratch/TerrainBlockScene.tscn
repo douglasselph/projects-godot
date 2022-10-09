@@ -1,0 +1,85 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://scratch/TerrainBlock.gd" type="Script" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://texture_raw/Ground037_2K/Ground037_2K_Color.png" type="Texture" id=3]
+[ext_resource path="res://texture_raw/Rocks007_2K/Rocks007_2K_Color.png" type="Texture" id=4]
+[ext_resource path="res://texture_raw/Rocks006_2K/Rocks006_2K_Color.png" type="Texture" id=5]
+[ext_resource path="res://texture_raw/Rocks028_2K/Rock028_2K_Color.png" type="Texture" id=6]
+
+[sub_resource type="Shader" id=2]
+code = "shader_type spatial;
+
+uniform sampler2D noise;
+uniform sampler2D heightmap;
+uniform sampler2D texture1; 
+uniform sampler2D texture2; 
+uniform sampler2D texture3; 
+uniform sampler2D texture4; 
+uniform sampler2D splatmap; 
+
+uniform float height_scale = 0.5;
+uniform float resolution = 16; 
+
+// texture() coordinates are between 0 and 1
+// mesh coordinates are betweeen -1 and 1 because the mesh size is 2x2.
+float height(vec2 noisepos, vec2 texturepos) {
+	float height = texture(noise, noisepos / 2.0 + 0.5).x;
+	vec4 h = texture(heightmap, texturepos);
+	height + h.r * height_scale;
+	return height;
+}
+
+void vertex() {
+	vec2 noisepos = VERTEX.xz;
+	float h = height(noisepos, UV);
+	VERTEX.y += h;
+	float nx = h - height(noisepos + vec2(0.1, 0.0), UV);
+	float nz = h - height(noisepos + vec2(0.0, 0.1), UV);
+	vec3 normal = normalize(vec3(nx, 0.1, nz));
+	NORMAL = normal;
+}
+
+void fragment () { 
+	vec3 result; 
+	float mix1 = texture(splatmap, UV).r; 
+	float mix2 = texture(splatmap, UV).g; 
+	float mix3 = texture(splatmap, UV).b; 
+	float mix4 = 1.0-texture(splatmap, UV).a;
+	vec3 color1 = texture(texture1, UV*resolution).rgb*mix1; 
+	vec3 color2 = texture(texture2, UV*resolution).rgb*mix2; 
+	vec3 color3 = texture(texture3, UV*resolution).rgb*mix3; 
+	vec3 color4 = texture(texture4, UV*resolution).rgb*mix4; 
+	result = color1 + color2 + color3 + color4; 
+	ALBEDO = result;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=6]
+
+[sub_resource type="NoiseTexture" id=5]
+resource_local_to_scene = true
+seamless = true
+noise = SubResource( 6 )
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
+shader_param/height_scale = 0.5
+shader_param/resolution = 16.0
+shader_param/noise = SubResource( 5 )
+shader_param/heightmap = ExtResource( 2 )
+shader_param/texture1 = ExtResource( 3 )
+shader_param/texture2 = ExtResource( 5 )
+shader_param/texture3 = ExtResource( 4 )
+shader_param/texture4 = ExtResource( 6 )
+shader_param/splatmap = ExtResource( 2 )
+
+[sub_resource type="PlaneMesh" id=1]
+material = SubResource( 3 )
+subdivide_width = 255
+subdivide_depth = 255
+
+[node name="TerrainBlockScene" type="Spatial"]
+
+[node name="TerrainBlock" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+script = ExtResource( 1 )
