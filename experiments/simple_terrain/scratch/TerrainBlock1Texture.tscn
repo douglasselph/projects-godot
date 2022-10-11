@@ -1,0 +1,114 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://texture_raw/Ground037_2K/Ground037_2K_Color.png" type="Texture" id=1]
+
+[sub_resource type="Shader" id=8]
+resource_local_to_scene = true
+code = "shader_type spatial;
+
+uniform sampler2D noise;
+
+// texture() coordinates are between 0 and 1
+// mesh coordinates are betweeen -1 and 1 because the mesh size is 2x2.
+void vertex() {
+        float height = texture(noise, VERTEX.xz / 2.0 + 0.5).x;
+        VERTEX.y += height;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=9]
+
+[sub_resource type="NoiseTexture" id=10]
+seamless = true
+noise = SubResource( 9 )
+
+[sub_resource type="ShaderMaterial" id=11]
+shader = SubResource( 8 )
+shader_param/noise = SubResource( 10 )
+
+[sub_resource type="PlaneMesh" id=1]
+material = SubResource( 11 )
+subdivide_width = 255
+subdivide_depth = 255
+
+[sub_resource type="Shader" id=6]
+code = "shader_type spatial;
+
+uniform sampler2D noise;
+uniform sampler2D texture1; 
+uniform float bumpy = 0.1;
+uniform float heightScale = 1.4;
+uniform float offset = 0.0;
+uniform int octaves = 2;
+uniform float roughnessAmplitudeDelta = 0.61;
+uniform float roughnessFrequencyDelta = 1.8;
+const float meshSize = 2.0;
+const float texSize = 1.0;
+
+// Convert from the mesh coordinates (2x2) where the center is 0.0 to 
+// texture coordinates which is between 0 and 1. Therefore in texture coordinates
+// the center is 0.5
+vec2 meshToTexture(vec2 meshPos) {
+	return meshPos / meshSize + texSize / 2.0;
+}
+
+float heightOf(vec2 noisepos) {
+	vec2 texPos = meshToTexture(noisepos) * bumpy;
+	float amplitude = 1.0;
+	float frequency = 1.0;
+	float total = 0.0;
+	float normalization = 0.0;
+	for (int oc = 0; oc < octaves; oc++) {
+		vec2 adjustedPos = texPos * frequency;
+		float value = texture(noise, adjustedPos).x;
+		total += value * amplitude;
+		normalization += amplitude;
+		amplitude *= roughnessAmplitudeDelta;
+		frequency *= roughnessFrequencyDelta;
+	}
+	float height = total / normalization;
+	return height * heightScale + offset;
+}
+
+// Given a height, and the coordinate that created it. Offset to the next height by moving a little bit in the x & z directions.
+// Using that vector, return the normal of it.
+vec3 normalOf(float h, vec2 noisepos) {
+	float nx = h - heightOf(noisepos + vec2(0.1, 0.0));
+	float nz = h - heightOf(noisepos + vec2(0.0, 0.1));
+	return normalize(vec3(nx, 0.1, nz));
+}
+
+void vertex() {
+	vec2 pos = VERTEX.xz;
+	float height = heightOf(pos);
+    VERTEX.y = height;
+	vec3 normal = normalOf(height, pos);
+	NORMAL = normal;
+}
+
+void fragment() {
+	ALBEDO = texture(texture1, UV).rgb;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=7]
+
+[sub_resource type="NoiseTexture" id=4]
+noise = SubResource( 7 )
+
+[sub_resource type="ShaderMaterial" id=5]
+shader = SubResource( 6 )
+shader_param/bumpy = 0.1
+shader_param/heightScale = 1.4
+shader_param/offset = 0.0
+shader_param/octaves = 5
+shader_param/roughnessAmplitudeDelta = 0.61
+shader_param/roughnessFrequencyDelta = 1.8
+shader_param/noise = SubResource( 4 )
+shader_param/texture1 = ExtResource( 1 )
+
+[node name="TerrainBlock1Texture" type="Spatial"]
+
+[node name="Spatial" type="Spatial" parent="."]
+
+[node name="MeshInstance" type="MeshInstance" parent="Spatial"]
+mesh = SubResource( 1 )
+material/0 = SubResource( 5 )

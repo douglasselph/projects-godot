@@ -27,7 +27,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Simple Terrains"
-run/main_scene="res://scratch/TerrainBlock2.tscn"
+run/main_scene="res://scratch/TerrainBlock1Texture.tscn"
 config/icon="res://icon.png"
 
 [editor_plugins]

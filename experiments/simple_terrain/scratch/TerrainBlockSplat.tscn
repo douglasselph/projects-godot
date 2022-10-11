@@ -1,11 +1,11 @@
 [gd_scene load_steps=12 format=2]
 
-[ext_resource path="res://scratch/TerrainBlock.gd" type="Script" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://texture_raw/Rocks028_2K/Rock028_2K_Color.png" type="Texture" id=2]
 [ext_resource path="res://texture_raw/Ground037_2K/Ground037_2K_Color.png" type="Texture" id=3]
 [ext_resource path="res://texture_raw/Rocks007_2K/Rocks007_2K_Color.png" type="Texture" id=4]
 [ext_resource path="res://texture_raw/Rocks006_2K/Rocks006_2K_Color.png" type="Texture" id=5]
-[ext_resource path="res://texture_raw/Rocks028_2K/Rock028_2K_Color.png" type="Texture" id=6]
+[ext_resource path="res://scratch/TerrainBlockSplat.gd" type="Script" id=6]
 
 [sub_resource type="Shader" id=2]
 code = "shader_type spatial;
@@ -23,20 +23,26 @@ uniform float resolution = 16;
 
 // texture() coordinates are between 0 and 1
 // mesh coordinates are betweeen -1 and 1 because the mesh size is 2x2.
-float height(vec2 noisepos, vec2 texturepos) {
+float heightOf(vec2 noisepos, vec2 texturepos) {
 	float height = texture(noise, noisepos / 2.0 + 0.5).x;
 	vec4 h = texture(heightmap, texturepos);
 	height + h.r * height_scale;
 	return height;
 }
 
+// Given a height, and the coordinate that created it. Offset to the next height by moving a little bit in the x & z directions.
+// Using that vector, return the normal of it.
+vec3 normalOf(float h, vec2 noisepos, vec2 texturepos) {
+	float nx = h - heightOf(noisepos + vec2(0.1, 0.0), texturepos);
+	float nz = h - heightOf(noisepos + vec2(0.0, 0.1), texturepos);
+	return normalize(vec3(nx, 0.1, nz));
+}
+
 void vertex() {
 	vec2 noisepos = VERTEX.xz;
-	float h = height(noisepos, UV);
-	VERTEX.y += h;
-	float nx = h - height(noisepos + vec2(0.1, 0.0), UV);
-	float nz = h - height(noisepos + vec2(0.0, 0.1), UV);
-	vec3 normal = normalize(vec3(nx, 0.1, nz));
+	float h = heightOf(noisepos, UV);
+	VERTEX.y = h;
+	vec3 normal = normalOf(h, noisepos, UV);
 	NORMAL = normal;
 }
 
@@ -66,20 +72,20 @@ shader = SubResource( 2 )
 shader_param/height_scale = 0.5
 shader_param/resolution = 16.0
 shader_param/noise = SubResource( 5 )
-shader_param/heightmap = ExtResource( 2 )
+shader_param/heightmap = ExtResource( 1 )
 shader_param/texture1 = ExtResource( 3 )
 shader_param/texture2 = ExtResource( 5 )
 shader_param/texture3 = ExtResource( 4 )
-shader_param/texture4 = ExtResource( 6 )
-shader_param/splatmap = ExtResource( 2 )
+shader_param/texture4 = ExtResource( 2 )
+shader_param/splatmap = ExtResource( 1 )
 
 [sub_resource type="PlaneMesh" id=1]
 material = SubResource( 3 )
 subdivide_width = 255
 subdivide_depth = 255
 
-[node name="TerrainBlockScene" type="Spatial"]
+[node name="TerrainBlockSplat" type="Spatial"]
 
 [node name="TerrainBlock" type="MeshInstance" parent="."]
 mesh = SubResource( 1 )
-script = ExtResource( 1 )
+script = ExtResource( 6 )
