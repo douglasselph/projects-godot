@@ -7,6 +7,7 @@ var _movingFrom = Vector2(0, 0)
 var _movingFromValid = false
 var _movingTrigger = 5
 var _movingScale = 0.1
+var _forwardLook = 3.0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -69,14 +70,27 @@ func update_movement(position):
 		Moving.ZOOM:
 			pass
 		Moving.ROTATE:
+			# Strategy: Projecting forward from the direction the camera is facing,
+			#  find a point a little distance out. Then using that point, with a normal
+			#  doing directly upward from the perspective of the camera locate an axis.
+			#  Using this axis, rotate the camera according to the dirx amount.
+			# For diry do the same kind of rotation, but on an x-aligned axis. 
 			var direction_facing = global_transform.basis.z.normalized()
 			var direction_up = global_transform.basis.y.normalized()
+			
 			var center = get_viewport().get_visible_rect().size / 2
-			var normal = project_local_ray_normal(center)
+			var projected_center_normal = project_local_ray_normal(center)
+			var projected_center_point = project_position(center, 3.0)
+			
+			var shift_position = direction_facing * _forwardLook
+			translate(shift_position)
 			
 			var angle_y = _movingScale * dirx
-			rotate_object_local(direction_facing,  angle_y)
+			var amount = direction_up * _movingScale
+
+			rotate(direction_up,  angle_y)
 			
+			translate(-shift_position)
 			# rotate_x(_movingScale * diry)
 			# rotate_y(_movingScale * dirx)
 			pass

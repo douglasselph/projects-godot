@@ -1,0 +1,72 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://texture_raw/Ground037_1K/Ground037_1K_Color.png" type="Texture" id=1]
+[ext_resource path="res://TerrainPerlin.gd" type="Script" id=2]
+[ext_resource path="res://TerrainPerlinMesh.gd" type="Script" id=3]
+
+[sub_resource type="Shader" id=3]
+code = "shader_type spatial;
+
+uniform sampler2D noise;
+uniform sampler2D ground;
+
+uniform float meshSize = 2.0;
+
+const float texSize = 1.0;
+
+vec2 meshToTexture(vec2 meshPos) {
+	return meshPos / meshSize + texSize / 2.0;
+}
+
+float heightOf(vec2 meshPos) {
+	return texture(noise, meshPos).x;
+}
+
+// Given a height, and the coordinate that created it. Offset to the next height by moving a little bit in the x & z directions.
+// Using that vector, return the normal of it.
+vec3 normalOf(float h, vec2 texPos) {
+        float nx = h - heightOf(texPos + vec2(0.1, 0.0));
+        float nz = h - heightOf(texPos + vec2(0.0, 0.1));
+        return normalize(vec3(nx, 0.1, nz));
+}
+
+// texture() coordinates are between 0 and 1
+// mesh coordinates are betweeen -1 and 1 because the mesh size is 2x2.
+void vertex() {
+	vec2 meshPos = VERTEX.xz;
+	vec2 texPos = meshToTexture(VERTEX.xz);
+	float height = heightOf(texPos);
+	vec3 normal = normalOf(height, texPos);
+    VERTEX.y = height;
+	NORMAL = normal;
+}
+
+void fragment() {
+	ALBEDO = texture(ground, UV).rgb;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=4]
+octaves = 4
+period = 128.0
+
+[sub_resource type="NoiseTexture" id=5]
+noise = SubResource( 4 )
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 3 )
+shader_param/meshSize = 2.0
+shader_param/noise = SubResource( 5 )
+shader_param/ground = ExtResource( 1 )
+
+[sub_resource type="PlaneMesh" id=1]
+material = SubResource( 2 )
+subdivide_width = 256
+subdivide_depth = 256
+
+[node name="TerrainPerlin" type="Spatial"]
+script = ExtResource( 2 )
+
+[node name="TerrainPerlinMesh" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+skeleton = NodePath("")
+script = ExtResource( 3 )
