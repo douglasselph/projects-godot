@@ -18,10 +18,22 @@ _global_script_classes=[ {
 "class": "MovableCamera",
 "language": "GDScript",
 "path": "res://scratch/Camera.gd"
+}, {
+"base": "Spatial",
+"class": "TerrainPerlin2",
+"language": "GDScript",
+"path": "res://TerrainPerlin2.gd"
+}, {
+"base": "MeshInstance",
+"class": "TerrainPerlinMesh",
+"language": "GDScript",
+"path": "res://TerrainPerlinMesh.gd"
 } ]
 _global_script_class_icons={
 "Edge": "",
-"MovableCamera": ""
+"MovableCamera": "",
+"TerrainPerlin2": "",
+"TerrainPerlinMesh": ""
 }
 
 [application]

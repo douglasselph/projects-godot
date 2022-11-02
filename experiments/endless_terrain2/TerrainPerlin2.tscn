@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://texture_raw/Ground037_1K/Ground037_1K_Color.png" type="Texture" id=1]
-[ext_resource path="res://TerrainPerlin.gd" type="Script" id=2]
+[ext_resource path="res://TerrainPerlin2.gd" type="Script" id=2]
+[ext_resource path="res://TerrainPerlinMesh.gd" type="Script" id=3]
 
-[sub_resource type="Shader" id=1]
+[sub_resource type="Shader" id=3]
 code = "shader_type spatial;
 
 uniform sampler2D noise;
@@ -44,25 +45,28 @@ void fragment() {
 	ALBEDO = texture(ground, UV).rgb;
 }"
 
-[sub_resource type="OpenSimplexNoise" id=2]
-octaves = 1
+[sub_resource type="OpenSimplexNoise" id=4]
+octaves = 4
+period = 128.0
 
-[sub_resource type="NoiseTexture" id=3]
-seamless = true
-noise = SubResource( 2 )
+[sub_resource type="NoiseTexture" id=5]
+noise = SubResource( 4 )
 
-[sub_resource type="ShaderMaterial" id=4]
-shader = SubResource( 1 )
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 3 )
 shader_param/meshSize = 2.0
-shader_param/noise = SubResource( 3 )
+shader_param/noise = SubResource( 5 )
 shader_param/ground = ExtResource( 1 )
 
-[sub_resource type="PlaneMesh" id=5]
-resource_local_to_scene = true
-material = SubResource( 4 )
-subdivide_width = 128
-subdivide_depth = 128
+[sub_resource type="PlaneMesh" id=1]
+material = SubResource( 2 )
+subdivide_width = 256
+subdivide_depth = 256
 
-[node name="TerrainPerlin" type="MeshInstance"]
-mesh = SubResource( 5 )
+[node name="TerrainPerlin2" type="Spatial"]
 script = ExtResource( 2 )
+
+[node name="TerrainPerlinMesh" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+skeleton = NodePath("")
+script = ExtResource( 3 )
