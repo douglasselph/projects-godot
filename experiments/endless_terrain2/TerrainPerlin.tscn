@@ -9,33 +9,40 @@ code = "shader_type spatial;
 uniform sampler2D noise;
 uniform sampler2D ground;
 
-uniform float meshSize = 2.0;
+// The size of the GLOBAL mesh that the local mesh lives within. Values will repeat once this size is exceeded.
+uniform vec2 meshGlobalSize = vec2(2, 2);
+// The offset needs to be computed as such:
+//   First subtract the local min (x,y) value. This mean the smallest local value that will come in with the VERTEX.
+//   Then add an offset which is the relative position the local mesh is within the global space.
+uniform vec2 meshOffset = vec2(-1, -1);
+uniform float amplitude = 1.0;
+uniform float exponentiation = 1.0;
 
-const float texSize = 1.0;
-
-vec2 meshToTexture(vec2 meshPos) {
-	return meshPos / meshSize + texSize / 2.0;
+// Convert the incoming mesh value into coordinate within the noise texture. The returned
+// value must between 0 and 1.
+vec2 meshToNoisePos(vec2 meshPos) {
+	float mx = (meshPos.x + meshOffset.x) / meshGlobalSize.x;
+	float my = (meshPos.y + meshOffset.y) / meshGlobalSize.y;
+    return vec2(mx, my);
 }
 
-float heightOf(vec2 meshPos) {
-	return texture(noise, meshPos).x;
+float heightOf(vec2 noisePos) {
+	return pow(texture(noise, noisePos).x, exponentiation) * amplitude;
 }
 
 // Given a height, and the coordinate that created it. Offset to the next height by moving a little bit in the x & z directions.
 // Using that vector, return the normal of it.
-vec3 normalOf(float h, vec2 texPos) {
-        float nx = h - heightOf(texPos + vec2(0.1, 0.0));
-        float nz = h - heightOf(texPos + vec2(0.0, 0.1));
-        return normalize(vec3(nx, 0.1, nz));
+vec3 normalOf(float h, vec2 noisePos) {
+    float nx = h - heightOf(noisePos + vec2(0.01, 0.0));
+    float nz = h - heightOf(noisePos + vec2(0.0, 0.01));
+    return normalize(vec3(nx, 0.1, nz));
 }
 
-// texture() coordinates are between 0 and 1
-// mesh coordinates are betweeen -1 and 1 because the mesh size is 2x2.
 void vertex() {
 	vec2 meshPos = VERTEX.xz;
-	vec2 texPos = meshToTexture(VERTEX.xz);
-	float height = heightOf(texPos);
-	vec3 normal = normalOf(height, texPos);
+	vec2 noisePos = meshToNoisePos(meshPos);
+	float height = heightOf(noisePos);
+	vec3 normal = normalOf(height, noisePos);
     VERTEX.y = height;
 	NORMAL = normal;
 }
@@ -45,24 +52,32 @@ void fragment() {
 }"
 
 [sub_resource type="OpenSimplexNoise" id=2]
-octaves = 1
+octaves = 4
+period = 256.0
+persistence = 0.4
 
 [sub_resource type="NoiseTexture" id=3]
-seamless = true
+width = 1024
+height = 1024
 noise = SubResource( 2 )
 
 [sub_resource type="ShaderMaterial" id=4]
+resource_local_to_scene = true
 shader = SubResource( 1 )
-shader_param/meshSize = 2.0
+shader_param/meshGlobalSize = Vector2( 2, 2 )
+shader_param/meshOffset = Vector2( -1, -1 )
+shader_param/amplitude = 1.0
+shader_param/exponentiation = 1.0
 shader_param/noise = SubResource( 3 )
 shader_param/ground = ExtResource( 1 )
 
 [sub_resource type="PlaneMesh" id=5]
 resource_local_to_scene = true
 material = SubResource( 4 )
-subdivide_width = 128
-subdivide_depth = 128
+subdivide_width = 256
+subdivide_depth = 256
 
 [node name="TerrainPerlin" type="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1 )
 mesh = SubResource( 5 )
 script = ExtResource( 2 )

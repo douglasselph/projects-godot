@@ -14,33 +14,43 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Edge.gd"
 }, {
+"base": "Spatial",
+"class": "GUIDisplay",
+"language": "GDScript",
+"path": "res://GUIDisplay.gd"
+}, {
 "base": "Camera",
 "class": "MovableCamera",
 "language": "GDScript",
 "path": "res://scratch/Camera.gd"
 }, {
 "base": "Spatial",
-"class": "TerrainPerlin2",
+"class": "TerrainBlock",
 "language": "GDScript",
-"path": "res://TerrainPerlin2.gd"
+"path": "res://TerrainBlock.gd"
 }, {
 "base": "MeshInstance",
-"class": "TerrainPerlinMesh",
+"class": "TerrainPerlin",
 "language": "GDScript",
-"path": "res://TerrainPerlinMesh.gd"
+"path": "res://TerrainPerlin.gd"
 } ]
 _global_script_class_icons={
 "Edge": "",
+"GUIDisplay": "",
 "MovableCamera": "",
-"TerrainPerlin2": "",
-"TerrainPerlinMesh": ""
+"TerrainBlock": "",
+"TerrainPerlin": ""
 }
 
 [application]
 
 config/name="Endless Terrain 2"
-run/main_scene="res://EndlessTerrain2.tscn"
+run/main_scene="res://EndlessTerrain.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+TerrainInfo="*res://TerrainInfo.gd"
 
 [gui]
 
@@ -61,6 +71,11 @@ ui_zoom={
 ui_rotate={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777240,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
+ ]
+}
+ui_reset={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":82,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 

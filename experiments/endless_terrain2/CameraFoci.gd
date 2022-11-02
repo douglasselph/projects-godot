@@ -6,13 +6,18 @@ var _moving = Moving.NONE
 var _movingFrom = Vector2(0, 0)
 var _movingFromValid = false
 var _movingTrigger = 5
-var _translateScale = 0.4
+var _translateScale = 0.6
 var _rotateScale = 0.1
 var _zoomScale = 0.4
+var _lastEmittedTranslation = Vector3.ZERO
+var _resetTransform = Transform.IDENTITY
 
-# Called when the node enters the scene tree for the first time.
+onready var poleMesh: MeshInstance = $Pole
+
+signal camera_moved(position)
+
 func _ready():
-	pass # Replace with function body.
+	_resetTransform = transform
 
 func _process(delta):
 	if Input.is_action_just_pressed("ui_shift"):
@@ -26,13 +31,15 @@ func _process(delta):
 		 Input.is_action_just_released("ui_rotate"):
 		_moving = Moving.NONE
 		_movingFromValid = false
+	elif Input.is_action_just_released("ui_reset"):
+		_reset()
 		
 func _input(event):
 	if _moving != Moving.NONE:
 		if event is InputEventMouseMotion:
-			update_movement(event.position)
+			_update_movement(event.position)
 
-func update_movement(position):
+func _update_movement(position):
 	if !_movingFromValid: 
 		_movingFrom = position
 		_movingFromValid = true
@@ -68,10 +75,11 @@ func update_movement(position):
 		Moving.TRANSLATE:
 			var direction = Vector3(dirx * _translateScale, diry * _translateScale, 0)
 			translate(direction)
+			emit_position()
 		Moving.ZOOM:
-			var mesh = get_node("Pole") as MeshInstance
 			var direction = Vector3(0, diry * _zoomScale, 0)
-			mesh.translate(direction)
+			poleMesh.translate(direction) 
+			emit_position()
 		Moving.ROTATE:
 			var direction_y = global_transform.basis.y.normalized()
 			var angle_x = _rotateScale * dirx
@@ -80,3 +88,13 @@ func update_movement(position):
 			var direction_x = global_transform.basis.x.normalized()
 			var angle_y = _rotateScale * diry
 			rotate(direction_x, angle_y)
+			emit_position()
+
+func emit_position():
+	var position = $Pole/Camera.global_translation
+	if position != _lastEmittedTranslation:
+		emit_signal("camera_moved", position)
+		_lastEmittedTranslation = position
+
+func _reset():
+	transform = _resetTransform
