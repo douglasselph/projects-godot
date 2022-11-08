@@ -1,0 +1,92 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://textures/Ground037_1K/Ground037_1K_Color.png" type="Texture" id=1]
+[ext_resource path="res://textures/Rocks006_2K/Rocks006_2K_Color.png" type="Texture" id=2]
+
+[sub_resource type="PlaneMesh" id=1]
+
+[sub_resource type="VisualShaderNodeTexture" id=2]
+texture = ExtResource( 1 )
+
+[sub_resource type="VisualShaderNodeInput" id=3]
+input_name = "uv"
+
+[sub_resource type="VisualShaderNodeVectorOp" id=4]
+default_input_values = [ 0, Vector3( 0, 0, 0 ), 1, Vector3( 4, 4, 0 ) ]
+operator = 2
+
+[sub_resource type="VisualShader" id=5]
+code = "shader_type spatial;
+render_mode specular_schlick_ggx, async_visible;
+
+uniform sampler2D tex_frg_2;
+
+
+
+void vertex() {
+// Output:0
+
+}
+
+void fragment() {
+// Input:3
+	vec3 n_out3p0 = vec3(UV, 0.0);
+
+// VectorOp:4
+	vec3 n_in4p1 = vec3(4.00000, 4.00000, 0.00000);
+	vec3 n_out4p0 = n_out3p0 * n_in4p1;
+
+// Texture:2
+	vec4 tex_frg_2_read = texture(tex_frg_2, n_out4p0.xy);
+	vec3 n_out2p0 = tex_frg_2_read.rgb;
+	float n_out2p1 = tex_frg_2_read.a;
+
+// Output:0
+	ALBEDO = n_out2p0;
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+nodes/fragment/0/position = Vector2( 1440, 100 )
+nodes/fragment/2/node = SubResource( 2 )
+nodes/fragment/2/position = Vector2( 1000, 40 )
+nodes/fragment/3/node = SubResource( 3 )
+nodes/fragment/3/position = Vector2( 420, 100 )
+nodes/fragment/4/node = SubResource( 4 )
+nodes/fragment/4/position = Vector2( 600, 100 )
+nodes/fragment/connections = PoolIntArray( 2, 0, 0, 0, 3, 0, 4, 0, 4, 0, 2, 0 )
+
+[sub_resource type="ShaderMaterial" id=6]
+shader = SubResource( 5 )
+
+[sub_resource type="SpatialMaterial" id=8]
+albedo_texture = ExtResource( 2 )
+
+[sub_resource type="SphereMesh" id=7]
+material = SubResource( 8 )
+radius = 2.5
+height = 5.0
+radial_segments = 12
+rings = 6
+
+[node name="World" type="Spatial"]
+
+[node name="Sun" type="DirectionalLight" parent="."]
+transform = Transform( -1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 40, -50 )
+light_energy = 0.2
+
+[node name="TerrainGenerator" type="Spatial" parent="."]
+transform = Transform( -1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 40, -50 )
+
+[node name="FakeFloor" type="MeshInstance" parent="."]
+transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 100, -0.110084, -0.590457, -0.0605419 )
+mesh = SubResource( 1 )
+material/0 = SubResource( 6 )
+
+[node name="DebugShadingBall" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -2 )
+mesh = SubResource( 7 )

@@ -20,7 +20,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Endless Terrain"
+config/name="Endless Terrain 1"
 run/main_scene="res://EndlessWorld.tscn"
 config/icon="res://icon.png"
 
