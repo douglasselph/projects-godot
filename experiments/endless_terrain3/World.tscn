@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://textures/Ground037_1K/Ground037_1K_Color.png" type="Texture" id=1]
 [ext_resource path="res://textures/Rocks006_2K/Rocks006_2K_Color.png" type="Texture" id=2]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=3]
 
 [sub_resource type="PlaneMesh" id=1]
 
@@ -12,7 +13,7 @@ texture = ExtResource( 1 )
 input_name = "uv"
 
 [sub_resource type="VisualShaderNodeVectorOp" id=4]
-default_input_values = [ 0, Vector3( 0, 0, 0 ), 1, Vector3( 4, 4, 0 ) ]
+default_input_values = [ 0, Vector3( 0, 0, 0 ), 1, Vector3( 10, 10, 0 ) ]
 operator = 2
 
 [sub_resource type="VisualShader" id=5]
@@ -33,7 +34,7 @@ void fragment() {
 	vec3 n_out3p0 = vec3(UV, 0.0);
 
 // VectorOp:4
-	vec3 n_in4p1 = vec3(4.00000, 4.00000, 0.00000);
+	vec3 n_in4p1 = vec3(10.00000, 10.00000, 0.00000);
 	vec3 n_out4p0 = n_out3p0 * n_in4p1;
 
 // Texture:2
@@ -51,6 +52,7 @@ void light() {
 
 }
 "
+graph_offset = Vector2( 3306.73, 777.805 )
 nodes/fragment/0/position = Vector2( 1440, 100 )
 nodes/fragment/2/node = SubResource( 2 )
 nodes/fragment/2/position = Vector2( 1000, 40 )
@@ -62,6 +64,8 @@ nodes/fragment/connections = PoolIntArray( 2, 0, 0, 0, 3, 0, 4, 0, 4, 0, 2, 0 )
 
 [sub_resource type="ShaderMaterial" id=6]
 shader = SubResource( 5 )
+
+[sub_resource type="BoxShape" id=9]
 
 [sub_resource type="SpatialMaterial" id=8]
 albedo_texture = ExtResource( 2 )
@@ -87,6 +91,13 @@ transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 100, -0.110084, -0.590457, -0.0
 mesh = SubResource( 1 )
 material/0 = SubResource( 6 )
 
+[node name="StaticBody" type="StaticBody" parent="FakeFloor"]
+
+[node name="CollisionShape" type="CollisionShape" parent="FakeFloor/StaticBody"]
+shape = SubResource( 9 )
+
 [node name="DebugShadingBall" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -2 )
 mesh = SubResource( 7 )
+
+[node name="Player" parent="." instance=ExtResource( 3 )]
