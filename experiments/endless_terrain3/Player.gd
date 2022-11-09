@@ -49,16 +49,16 @@ func _get_2d_movement() -> Vector2:
 	var movement_vector := Vector2()
 	
 	if Input.is_action_pressed("ui_forward"):
-		movement_vector.y = -1
+		movement_vector.x = -1
 		_facingDirection = 0
 	elif Input.is_action_pressed("ui_back"):
-		movement_vector.y = 1
+		movement_vector.x = 1
 		_facingDirection = PI
 	elif Input.is_action_pressed("ui_left"):
-		movement_vector.x = -1
+		movement_vector.y = -1
 		_facingDirection = PI * 0.5
 	elif Input.is_action_pressed("ui_right"):
-		movement_vector.x = 1
+		movement_vector.y = 1
 		_facingDirection = PI * 1.5
 	
 	return movement_vector.normalized()
