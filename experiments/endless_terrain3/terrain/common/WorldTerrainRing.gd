@@ -105,24 +105,143 @@ extends Spatial
 #  3. Now the outer rings shift, starting with the LOD-1 ring. 4 LOD-1 blocks will move into the LOD-2
 #     ring, and another 4 will 
 # 
-# ALGORITHM
-# ---------
-#
-# THe alogorithm works as follows:
-#   1. CP is the central Vector3 point, which represents where the player is.
-#   2. Given CP, we first compute the X,Y coordinate of the upper-left box of the central
-#      4 at LOD-0. Call this UL LOD-0. Computing this value is one of the most
-#      complicated bits of this algorith because CP can live anywhere within the 
-#      the central 4 without causig a seismic shift X,Y's. More on this later.
-#   3. Given UL LOD-0 the coordinates of the remaining 3 for LOD-0 can be computed.
-#      Note that the perlin parameters for all the blocks are always the same, except
-#      the location and size of the blocks
-#   4. Each ring then can be computed, for whatever LOD is desired based on the 
-#      computrd value of UL LOD-0
-#   5. Once the coordinate are all computed, the actual terrain meshes can be built.
-#      Note that during movement the net-effect will be that a row or column
-#      lost and another gained across the central 16 and rings.The rest of the terrains
-#      will remain as they are. Because of this there is always exactly the same number
-#      of blocks as the camera moves about. The only change will be the coordinates and 
-#      size of each block. The other perlin parameters remain constant.
-#
+class_name WorldTerrainRing
+	
+class CreateBase:
+	func create(params: TerrainParams) -> TerrainBase:
+		return TerrainBase.new()
+	
+class Params:
+	var maxLOD: int
+	var boxUnitSize: float
+
+
+enum State { UNSET, TRANSITIONING, READY }
+
+class Box:
+	var state = State.UNSET
+	var position: Vector2
+	var lod: int
+	var terrain: TerrainBase
+	
+	func _init(lod: int):
+		self.lod = lod
+		
+var _maxLOD: int
+var _textureNumPts: int
+var _boxUnitSize: float
+var _box4size: float
+var _initialized = false
+# Fixed dictionary of all the boxes in the ring
+var _boxes = {}
+# Dictionary keyed by the current world positions being helf in the ring
+var _positionsUsed = {}
+# Transiting positions used
+var _positionsUsedTransition = {}
+
+func _init(params: Params):
+	_maxLOD = params.maxLOD
+	_boxUnitSize - params.boxUnitSize
+	_box4size = _boxUnitSize * 2
+	_textureNumPts = 512 * int(pow(2, _maxLOD))
+
+	_setup_boxes()
+
+func apply(centerPosition: Vector3):
+	# Compute the upper left box coordinate of the central 4 boxes.
+	var UL_coordinate = _compute_UL_coordinate(centerPosition)
+	
+	_compute_coordinates(UL_coordinate)
+	
+	# Prepare LOD-0: Only set positions of what the boxes will hold.
+	if not _initialized:
+		# First time
+		pass
+	
+# Given a central coordinate compute the coordinate of the upper-left box of the central 4 boxes.
+# This computation needs to be such that while the camera (or CP) moves within the 4, it should 
+# not change what the computed UL is. It only changes as soon as the CP moves outside one of 
+# the central 4. At this point, the central 4 shifts to be a new central 4, and all the surrounging
+# rings will follow accordingly.
+func _compute_UL_coordinate(centralPos: Vector3) -> Vector2:
+	# Treat the unit 4 as a single unit cell. Compute it's upper-left and pass it back.
+	var box4x = floor(centralPos.x / _box4size)
+	var box4z = floor(centralPos.y / _box4size)
+	var ul_x = box4x * _box4size
+	var ul_z = box4z * _box4size
+	return Vector2(ul_x, ul_z)
+
+func _setup_boxes():
+	
+	# Center 4
+	for zi in range(0, 2):
+		for xi in range(0, 2): 
+			_boxes[_keyOf(0, zi, xi)] = Box.new(0)
+			
+	# All the rings
+	for lod in range(1, _maxLOD):
+		var boxes = Array()
+		for zi in range(0, 4):
+			for xi in range(0, 4):
+				if zi == 0 or zi == 3 or xi == 0 or xi == 3:
+					_boxes[_keyOf(lod, zi, xi)] = Box.new(lod)
+
+func _compute_coordinates(ul_coordinate: Vector2):
+	
+	_compute_coordinates_central4(ul_coordinate)
+	
+	for lod in range(1, _maxLOD+1):
+		_compute_coordinates_ring_lod(lod, ul_coordinate)
+	
+# Given the UL coordinate of the central 4, compute all the positions of the 4 central boxes.
+func _compute_coordinates_central4(ul_coordinate: Vector2):
+	var startx = ul_coordinate.x
+	var startz = ul_coordinate.y
+	var z = startz
+	var position: Vector2
+	var key: String
+	var newPositionsUsed = {}
+	var box: Box
+	for zi in range(0, 2):
+		var x = startx
+		for xi in range(0, 2):
+			position = Vector2(x, z)
+			_assignPosition(0, zi, xi, position)
+			key = _keyOf(0, zi, xi)
+			box = _boxes[key]
+			if (_positionsUsed.containsKey(position)):
+				newPositionsUsed[position] = key
+			else:
+				box.position = position
+				box.state = State.TRANSITIONING
+				newPositionsUsed[position] = key
+			x += _boxUnitSize
+		z += _boxUnitSize
+
+# Given the central UL coordinate, compute the coordinates for the ring at the 
+# indicated level of detail (LOD). Returned is an array of 12 Coordinate's.
+# Each ring grows in size by a factor of 2 for each increasing LOD.
+func _compute_coordinates_ring_lod(lod: int, ul_coordinate: Vector2):
+	var startx: float = ul_coordinate.x - _boxUnitSize
+	var startz: float = ul_coordinate.y - _boxUnitSize
+	var step = _boxUnitSize
+	for s in range(1, lod):
+		step *= 2
+		startx -= step
+		startz -= step
+	var result = []
+	var z: float = startz
+	var x: float
+	for zi in range(0, 4):
+		x = startx
+		for xi in range(0, 4):
+			if zi == 0 or zi == 3 or xi == 0 or xi == 3:
+				_boxes[_keyOf(lod, zi, xi)].position = Vector2(x, z)
+			x += step
+		z += step
+
+func _assign_box_position(lod: int, zi: int, xi: int, position: Vector2):
+	pass
+	
+func _keyOf(lod: int, zi: int, xi: int) -> String:
+	return "%d,%d,%d" % [lod, zi, xi]

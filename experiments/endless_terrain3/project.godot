@@ -9,19 +9,43 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "Coordinates",
+"language": "GDScript",
+"path": "res://terrain/common/Coordinates.gd"
+}, {
 "base": "KinematicBody",
 "class": "Player",
 "language": "GDScript",
 "path": "res://Player.gd"
 }, {
+"base": "Node",
+"class": "TerrainBase",
+"language": "GDScript",
+"path": "res://terrain/common/TerrainBase.gd"
+}, {
+"base": "Node",
+"class": "TerrainParams",
+"language": "GDScript",
+"path": "res://terrain/common/TerrainParams.gd"
+}, {
 "base": "Spatial",
 "class": "TerrainRing",
 "language": "GDScript",
 "path": "res://TerrainRing.gd"
+}, {
+"base": "Spatial",
+"class": "WorldTerrainRing",
+"language": "GDScript",
+"path": "res://terrain/common/WorldTerrainRing.gd"
 } ]
 _global_script_class_icons={
+"Coordinates": "",
 "Player": "",
-"TerrainRing": ""
+"TerrainBase": "",
+"TerrainParams": "",
+"TerrainRing": "",
+"WorldTerrainRing": ""
 }
 
 [application]

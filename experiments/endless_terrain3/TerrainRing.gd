@@ -104,7 +104,7 @@ class Coordinate:
 	func _init(pos: Vector2, ld: int):
 		position = pos
 		lod = ld
-	
+
 func clear():
 	for key in _terrains.keys():
 		var terrain = _terrains[key]
