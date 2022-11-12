@@ -1,5 +1,4 @@
 extends Node
-
 #
 # Maintains the list of coordinates for all the boxes within the WorldRing
 # and their positions within the world.
@@ -9,7 +8,6 @@ class_name Coordinates
 var _boxUnitSize: float
 var _maxLOD: int
 var _boxes = {}
-
 #
 #  Maintains just the position of the box within the ring.
 #
