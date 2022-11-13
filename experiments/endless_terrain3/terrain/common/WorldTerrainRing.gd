@@ -114,6 +114,8 @@ class CreateBase:
 class Params:
 	var maxLOD: int
 	var boxUnitSize: float
+	var create: CreateBase
+	var initialSubDivide = 128
 
 
 enum State { UNSET, AVAILABLE, TRANSITIONING, READY }
@@ -124,10 +126,11 @@ class Box:
 	var position: Vector2
 	var lod: int
 	var terrain: TerrainBase
+	var subDivide: int
+	var size: int
 	
 	func _init(lod: int):
 		self.lod = lod
-
 
 var _maxLOD: int
 var _textureNumPts: int
@@ -136,14 +139,17 @@ var _box4size: float
 var _initialized = false
 # An array of arrays holding boxes at each LOD.
 var _boxes = [] 
-
+var _create: CreateBase
+var _initialSubDivide: int
 
 func _init(params: Params):
 	_maxLOD = params.maxLOD
 	_boxUnitSize - params.boxUnitSize
 	_box4size = _boxUnitSize * 2
 	_textureNumPts = 512 * int(pow(2, _maxLOD))
-
+	_create = params.create
+	_initialSubDivide = params.initialSubDivide
+	
 	_setup_boxes()
 
 
@@ -156,22 +162,35 @@ func apply(centerPosition: Vector3):
 	# Prepare LOD-0: Only set positions of what the boxes will hold.
 	if not _initialized:
 		# First time
+		for array in _boxes:
+			for box in array:
+				var params = TerrainParams.new()
+				params.position = box.posiiton
+				params.subDivide = box.subDivide
+				params.size = box.size
+				box.terrain = _create.create(params)
+				box.terrain.apply()
+	else:
 		pass
-
+		
 
 func _setup_boxes():
 	
 	# Center 4
 	var boxes: Array = []
 	for x in range(0, 4):
-		boxes.append(Box.new(0))
+		var box = Box.new(0)
+		_setupBox(box)
+		boxes.append(box)
 	_boxes.append(boxes)
 	
 	# All the rings
 	for lod in range(1, _maxLOD):
 		boxes = Array()
 		for x in range(0, 12):
-			boxes.append(Box.new(lod))
+			var box = Box.new(lod)
+			_setupBox(box)
+			boxes.append(box)
 		_boxes.append(boxes)
 		
 
@@ -265,10 +284,6 @@ func _assign_box_position(lod: int, zi: int, xi: int, position: Vector2):
 	pass
 
 
-func _keyOf(lod: int, zi: int, xi: int) -> String:
-	return "%d,%d,%d" % [lod, zi, xi]
-
-
 func _boxAtPosition(lod: int, position: Vector2) -> Box:
 	for box in _boxes[lod]:
 		if box.position == position:
@@ -281,3 +296,14 @@ func _boxQueryAvailable(lod: int) -> Box:
 		if box.state == State.AVAILABLE:
 			return box
 	return null
+
+
+func _setupBox(box: Box):
+	var subDivide = _initialSubDivide
+	var size = _boxUnitSize
+	if box.lod > 1:
+		var factor = pow(2, box.lod-1)
+		subDivide /= factor
+		size *= factor
+	box.subDivide = subDivide
+	box.size = size

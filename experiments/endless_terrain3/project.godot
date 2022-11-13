@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
-"class": "Coordinates",
-"language": "GDScript",
-"path": "res://terrain/common/Coordinates.gd"
-}, {
 "base": "KinematicBody",
 "class": "Player",
 "language": "GDScript",
@@ -40,7 +35,6 @@ _global_script_classes=[ {
 "path": "res://terrain/common/WorldTerrainRing.gd"
 } ]
 _global_script_class_icons={
-"Coordinates": "",
 "Player": "",
 "TerrainBase": "",
 "TerrainParams": "",
