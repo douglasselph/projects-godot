@@ -106,7 +106,7 @@ class_name WorldTerrainRing
 extends Spatial
 
 
-class Params:
+class RingParams:
 	var maxLOD: int
 	var boxUnitSize: float
 	var create: CreateBase
@@ -120,28 +120,30 @@ class Box:
 	var state = State.UNSET
 	var position: Vector2
 	var lod: int
-	var terrain: TerrainBase = null
+	var terrain: TerrainBase
 	var subDivide: int
 	var size: int
 	
 	func _init(lod: int):
 		self.lod = lod
+		
+	func display():
+		print("position=", position, ", subDivide=", subDivide, ", size=", size)
 
 
 var _maxLOD: int
 var _textureNumPts: int
 var _boxUnitSize: float
 var _box4size: float
-var _initialized = false
 # An array of arrays holding boxes at each LOD.
 var _boxes = [] 
 var _create: CreateBase
 var _initialSubDivide: int
 
 
-func _init(params: Params):
+func _init(params: RingParams):
 	_maxLOD = params.maxLOD
-	_boxUnitSize - params.boxUnitSize
+	_boxUnitSize = params.boxUnitSize
 	_box4size = _boxUnitSize * 2
 	_textureNumPts = 512 * int(pow(2, _maxLOD))
 	_create = params.create
@@ -174,7 +176,6 @@ func apply(centerPosition: Vector3):
 
 
 func _setup_boxes():
-	
 	# Center 4
 	var boxes: Array = []
 	for x in range(0, 4):
@@ -277,10 +278,6 @@ func _assignPositions(lod: int, positions: Array):
 		if box != null:
 			box.position = position
 			box.state = State.TRANSITIONING
-
-
-func _assign_box_position(lod: int, zi: int, xi: int, position: Vector2):
-	pass
 
 
 func _boxAtPosition(lod: int, position: Vector2) -> Box:
