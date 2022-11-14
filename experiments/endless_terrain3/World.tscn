@@ -3,7 +3,7 @@
 [ext_resource path="res://textures/Water002/Water002_Color.jpg" type="Texture" id=1]
 [ext_resource path="res://textures/Rocks006_2K/Rocks006_2K_Color.png" type="Texture" id=2]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=3]
-[ext_resource path="res://TerrainGenerator.gd" type="Script" id=4]
+[ext_resource path="res://terrain/world/WorldTerrain.gd" type="Script" id=4]
 
 [sub_resource type="PlaneMesh" id=1]
 
@@ -83,7 +83,7 @@ rings = 6
 transform = Transform( -1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 40, -50 )
 light_energy = 0.2
 
-[node name="TerrainGenerator" type="Spatial" parent="."]
+[node name="WorldTerrain" type="Spatial" parent="."]
 transform = Transform( -1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 40, -50 )
 script = ExtResource( 4 )
 

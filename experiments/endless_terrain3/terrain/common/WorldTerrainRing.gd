@@ -128,10 +128,13 @@ class Box:
 		self.lod = lod
 		
 	func display():
-		print("position=", position, ", subDivide=", subDivide, ", size=", size)
+		var hasTerrain = false
+		if terrain != null: 
+			hasTerrain = true
+		print("Lod:", lod, ", position=", position, ", subDivide=", subDivide, ", size=", size, ", state=", state, ", hasTerrain=", hasTerrain)
 
 
-var _maxLOD: int
+var _numLOD: int
 var _textureNumPts: int
 var _boxUnitSize: float
 var _box4size: float
@@ -142,24 +145,34 @@ var _initialSubDivide: int
 
 
 func _init(params: RingParams):
-	_maxLOD = params.maxLOD
+	_numLOD = params.maxLOD + 1
 	_boxUnitSize = params.boxUnitSize
 	_box4size = _boxUnitSize * 2
-	_textureNumPts = 512 * int(pow(2, _maxLOD))
+	_textureNumPts = 256 * int(pow(2, _numLOD))
 	_create = params.create
 	_initialSubDivide = params.initialSubDivide
 	
 	_setup_boxes()
+	
+	print("SETUP:")
+	for array in _boxes:
+		for box in array:
+			box.display()
 
 
 func apply(centerPosition: Vector3):
 	# Compute the upper left box coordinate of the central 4 boxes.
 	var UL_coordinate = _compute_UL_coordinate(centerPosition)
 	
+	print("UL_coordinate=", UL_coordinate)
+	
 	_compute_coordinates(UL_coordinate)
+	
+	print("BUILDING")
 	
 	for array in _boxes:
 		for box in array:
+			box.display()
 			if box.state == State.READY:
 				continue
 			var params = TerrainParams.new()
@@ -185,7 +198,7 @@ func _setup_boxes():
 	_boxes.append(boxes)
 	
 	# All the rings
-	for lod in range(1, _maxLOD):
+	for lod in range(1, _numLOD):
 		boxes = Array()
 		for x in range(0, 12):
 			var box = Box.new(lod)
@@ -213,7 +226,7 @@ func _compute_coordinates(ul_coordinate: Vector2):
 	var positions = _compute_coordinates_central4(ul_coordinate)
 	_assignPositions(0, positions)
 	
-	for lod in range(1, _maxLOD+1):
+	for lod in range(1, _numLOD):
 		positions = _compute_coordinates_ring_lod(lod, ul_coordinate)
 		_assignPositions(lod, positions)
 
