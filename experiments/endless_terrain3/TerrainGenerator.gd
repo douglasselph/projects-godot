@@ -1,16 +1,16 @@
 extends Spatial
 
+var _ring: WorldTerrainRing
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	var params = WorldTerrainRing.Params.new()
+	params.create = CreateBlock.new()
+	params.maxLOD = 1
+	params.boxUnitSize = 2.0
+	_ring = WorldTerrainRing.new(params)
+	_ring.apply(Vector3(0, 0, 0))
+	
+	add_child(_ring)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+

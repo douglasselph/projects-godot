@@ -77,8 +77,6 @@
 # In order to accomplish this pattern additional vertex boxes, other than the mesh boxes actually seen,
 # will be needed. The are referred to as transitionary boxes.
 #
-# 
-#
 #
 # The algorithm is ordered as follows:
 #
@@ -107,10 +105,7 @@
 class_name WorldTerrainRing
 extends Spatial
 
-class CreateBase:
-	func create(params: TerrainParams) -> TerrainBase:
-		return TerrainBase.new()
-	
+
 class Params:
 	var maxLOD: int
 	var boxUnitSize: float
@@ -125,12 +120,13 @@ class Box:
 	var state = State.UNSET
 	var position: Vector2
 	var lod: int
-	var terrain: TerrainBase
+	var terrain: TerrainBase = null
 	var subDivide: int
 	var size: int
 	
 	func _init(lod: int):
 		self.lod = lod
+
 
 var _maxLOD: int
 var _textureNumPts: int
@@ -141,6 +137,7 @@ var _initialized = false
 var _boxes = [] 
 var _create: CreateBase
 var _initialSubDivide: int
+
 
 func _init(params: Params):
 	_maxLOD = params.maxLOD
@@ -159,20 +156,22 @@ func apply(centerPosition: Vector3):
 	
 	_compute_coordinates(UL_coordinate)
 	
-	# Prepare LOD-0: Only set positions of what the boxes will hold.
-	if not _initialized:
-		# First time
-		for array in _boxes:
-			for box in array:
-				var params = TerrainParams.new()
-				params.position = box.posiiton
-				params.subDivide = box.subDivide
-				params.size = box.size
+	for array in _boxes:
+		for box in array:
+			if box.state == State.READY:
+				continue
+			var params = TerrainParams.new()
+			params.position = box.posiiton
+			params.subDivide = box.subDivide
+			params.size = box.size
+
+			if box.terrain == null:
 				box.terrain = _create.create(params)
-				box.terrain.apply()
-	else:
-		pass
-		
+				add_child(box.terrain.instance)
+			else:
+				box.terrain.params = params
+			box.state = State.READY
+
 
 func _setup_boxes():
 	

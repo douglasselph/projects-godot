@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "CreateBase",
+"language": "GDScript",
+"path": "res://terrain/common/CreateBase.gd"
+}, {
+"base": "CreateBase",
+"class": "CreateBlock",
+"language": "GDScript",
+"path": "res://terrain/world/CreateBlock.gd"
+}, {
 "base": "KinematicBody",
 "class": "Player",
 "language": "GDScript",
@@ -19,15 +29,20 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://terrain/common/TerrainBase.gd"
 }, {
+"base": "TerrainBase",
+"class": "TerrainMap",
+"language": "GDScript",
+"path": "res://terrain/world/TerrainMap.gd"
+}, {
 "base": "Node",
 "class": "TerrainParams",
 "language": "GDScript",
 "path": "res://terrain/common/TerrainParams.gd"
 }, {
-"base": "Spatial",
-"class": "TerrainRing",
+"base": "TerrainBase",
+"class": "TerrainPerlin",
 "language": "GDScript",
-"path": "res://TerrainRing.gd"
+"path": "res://terrain/world/TerrainPerlin.gd"
 }, {
 "base": "Spatial",
 "class": "WorldTerrainRing",
@@ -35,10 +50,13 @@ _global_script_classes=[ {
 "path": "res://terrain/common/WorldTerrainRing.gd"
 } ]
 _global_script_class_icons={
+"CreateBase": "",
+"CreateBlock": "",
 "Player": "",
 "TerrainBase": "",
+"TerrainMap": "",
 "TerrainParams": "",
-"TerrainRing": "",
+"TerrainPerlin": "",
 "WorldTerrainRing": ""
 }
 
@@ -47,6 +65,10 @@ _global_script_class_icons={
 config/name="Endless Terrain 3"
 run/main_scene="res://World.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+TerrainInfo="*res://terrain/common/TerrainInfo.gd"
 
 [gui]
 
