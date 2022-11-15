@@ -176,15 +176,16 @@ func apply(centerPosition: Vector3):
 			if box.state == State.READY:
 				continue
 			var params = TerrainParams.new()
-			params.position = box.posiiton
+			params.position = box.position
 			params.subDivide = box.subDivide
-			params.size = box.size
+			params.size = Vector2(box.size, box.size)
 
 			if box.terrain == null:
 				box.terrain = _create.create(params)
 				add_child(box.terrain.instance)
 			else:
 				box.terrain.params = params
+				box.terrain.modify()
 			box.state = State.READY
 
 

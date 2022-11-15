@@ -15,3 +15,7 @@ func _set_params(params: TerrainParams):
 
 func _get_params() -> TerrainParams:
 	return params
+	
+
+func modify():
+	pass

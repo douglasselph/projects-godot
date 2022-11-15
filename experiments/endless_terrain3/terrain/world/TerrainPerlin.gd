@@ -12,9 +12,9 @@ func _init(params: TerrainParams).(params):
 	_noise.persistence = TerrainInfo.Persistence
 	_noise.lacunarity = TerrainInfo.Lucanarity
 
-	create()
+	build()
 
-func create():
+func build():
 	var planeMesh = PlaneMesh.new()
 	var params = self.params
 	planeMesh.size = params.size
@@ -38,7 +38,7 @@ func create():
 		
 	# Cleanup
 	for i in range(arrayPlane.get_surface_count()):
-		arrayPlane.surface_remove()
+		arrayPlane.surface_remove(i)
 		
 	dataTool.commit_to_surface(arrayPlane)
 	surfaceTool.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -51,5 +51,10 @@ func create():
 	self.instance.cast_shadow = GeometryInstance.SHADOW_CASTING_SETTING_OFF
 
 func modify():
-		
-	pass
+	var pmesh = self.instance.mesh as PlaneMesh
+	var arrays = pmesh.get_mesh_arrays()
+	var varray = arrays[Mesh.ARRAY_VERTEX]
+	for i in varray.size():
+		var value = varray[i]
+		print("VALUE ", i, "=", value)
+	
