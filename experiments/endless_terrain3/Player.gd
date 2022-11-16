@@ -12,10 +12,12 @@ const DECEL := 15.0
 const JUMP_SPEED := 15
 const GRAVITY := -45
 
+
 func _process(delta: float):
 	_move(delta)
 	_face_forward()
-	
+
+
 func _move(delta: float):
 	var movementDir := _get_2d_movement()
 	var camera_xform := ($Camera as Camera).get_global_transform()
@@ -30,6 +32,7 @@ func _move(delta: float):
 	
 	move_and_slide(_velocity, Vector3.UP)
 
+
 func _move_vertically(dir: Vector3, delta: float) -> Vector3:
 	_velocity.y += GRAVITY * delta
 	if is_on_floor():
@@ -41,10 +44,12 @@ func _move_vertically(dir: Vector3, delta: float) -> Vector3:
 	dir = dir.normalized()
 	
 	return dir
-	
+
+
 func _face_forward():
 	($Body as MeshInstance).rotation.y = _facingDirection
-	
+
+
 func _get_2d_movement() -> Vector2:
 	var movement_vector := Vector2()
 	
@@ -62,7 +67,8 @@ func _get_2d_movement() -> Vector2:
 		_facingDirection = PI * 1.5
 	
 	return movement_vector.normalized()
-	
+
+
 func _h_accel(dir: Vector3, delta: float) -> Vector3:
 	var vel_2d := _velocity
 	vel_2d.y = 0
