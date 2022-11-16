@@ -40,7 +40,7 @@ func generate():
 				Vector3(position.x + x * Globals.QUAD_SIZE, 0, position.y + z * Globals.QUAD_SIZE),
 				Vector2(Globals.QUAD_SIZE, Globals.QUAD_SIZE)
 			)
-			
+
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	st.set_material(material)
 	for i in range(vertices.size()):
@@ -53,7 +53,7 @@ func generate():
 	self.set_name(key)
 	self.mesh = mesh
 	self.cast_shadow = 1
-	
+
 
 func _generate_quad(pos: Vector3, size: Vector2):
 	vertices.push_back(_create_vertex(pos.x, pos.z + size.y))

@@ -2,6 +2,7 @@ class_name TerrainPerlin
 
 extends TerrainBase
 
+
 var _noise: OpenSimplexNoise
 
 
