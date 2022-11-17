@@ -1,6 +1,5 @@
 extends Spatial
 
-
 var threads : Array
 
 var chunks := {}

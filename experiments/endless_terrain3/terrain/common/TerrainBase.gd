@@ -6,9 +6,9 @@ var params: TerrainParams # setget _set_params, _get_params
 var instance: MeshInstance
 var material: Material
 
-func _init(params: TerrainParams):
-	self.params = params
-	self.material = _setup_material(params.material)
+func _init(p: TerrainParams):
+	self.params = p
+	self.material = _setup_material(p.material)
 
 
 func _setup_material(material: Material) -> Material:

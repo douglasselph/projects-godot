@@ -11,15 +11,15 @@ var vertices = []
 var uvs = []
 
 
-func _init(grid_position: Vector2, noise : OpenSimplexNoise, material: Material):
-	self.grid_position = grid_position
+func _init(grid_pos: Vector2, n : OpenSimplexNoise, mat: Material):
+	self.grid_position = grid_pos
 	self.position = Vector2(
-		grid_position.x * Globals.CHUNK_SIZE - Globals.CHUNK_SIZE / 2.0,
-		grid_position.y * Globals.CHUNK_SIZE - Globals.CHUNK_SIZE / 2.0
+		grid_pos.x * Globals.CHUNK_SIZE - Globals.CHUNK_SIZE / 2.0,
+		grid_pos.y * Globals.CHUNK_SIZE - Globals.CHUNK_SIZE / 2.0
 	)
-	self.key = "TerrainChunk_%d_%d" % [grid_position.x, grid_position.y]
-	self.noise = noise
-	self.material = _setup_material(material)
+	self.key = "TerrainChunk_%d_%d" % [grid_pos.x, grid_pos.y]
+	self.noise = n
+	self.material = _setup_material(mat)
 
 
 func _setup_material(material: Material) -> Material:
