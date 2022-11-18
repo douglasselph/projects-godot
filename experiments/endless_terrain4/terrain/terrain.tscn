@@ -1,0 +1,30 @@
+[gd_scene load_steps=8 format=3 uid="uid://1wd3fpiig1sc"]
+
+[ext_resource type="Shader" path="res://terrain/terrain.gdshader" id="1_2e4nu"]
+[ext_resource type="Texture2D" uid="uid://dmstjl6cdowo1" path="res://icon.png" id="2_v7ky6"]
+[ext_resource type="Texture2D" uid="uid://bynwuskvnqpyc" path="res://height_map.png" id="3_2k1lx"]
+[ext_resource type="Script" path="res://terrain/terrain.gd" id="4_sgfai"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mpux4"]
+render_priority = 0
+shader = ExtResource("1_2e4nu")
+shader_parameter/albedo = ExtResource("2_v7ky6")
+shader_parameter/height_ratio = 0.5
+shader_parameter/heightmap = ExtResource("3_2k1lx")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2syx1"]
+size = Vector2(10, 10)
+subdivide_width = 50
+subdivide_depth = 50
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h0af6"]
+
+[node name="terrain" type="MeshInstance3D"]
+material_override = SubResource("ShaderMaterial_mpux4")
+mesh = SubResource("PlaneMesh_2syx1")
+script = ExtResource("4_sgfai")
+
+[node name="StaticBody3d" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3d" type="CollisionShape3D" parent="StaticBody3d"]
+shape = SubResource("BoxShape3D_h0af6")

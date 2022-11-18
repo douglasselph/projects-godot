@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://d3y3x2mbx25h7"]
+
+[ext_resource type="Script" path="res://camera/CameraFoci.gd" id="1_12ri0"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_7f3ma"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_l0n02"]
+top_radius = 0.1
+bottom_radius = 0.1
+height = 30.0
+
+[node name="CameraFoci3D" type="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0)
+mesh = SubResource("SphereMesh_7f3ma")
+script = ExtResource("1_12ri0")
+
+[node name="Pole" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 20)
+mesh = SubResource("CylinderMesh_l0n02")
+
+[node name="Camera3D" type="Camera3D" parent="Pole"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 15, 0)

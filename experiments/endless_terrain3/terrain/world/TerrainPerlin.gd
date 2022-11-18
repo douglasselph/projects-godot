@@ -94,6 +94,7 @@ func build2():
 	
 	var surfaceTool = SurfaceTool.new()	
 	surfaceTool.create_from(planeMesh, 0)
+	surfaceTool.set_material(material)
 	
 	var arrayPlane = surfaceTool.commit()
 	

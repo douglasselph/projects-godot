@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://q2jr4m5lrl1d"]
+
+[ext_resource type="Script" path="res://world.gd" id="1_6pnyw"]
+[ext_resource type="PackedScene" uid="uid://dmim4jiq5k8cs" path="res://terrain/terrainRing.tscn" id="1_623yl"]
+[ext_resource type="PackedScene" uid="uid://d3y3x2mbx25h7" path="res://camera/CameraFoci3D.tscn" id="2_rtolc"]
+
+[node name="world" type="Node3D"]
+script = ExtResource("1_6pnyw")
+
+[node name="DirectionalLight3d" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.619162, 0.785263, 0, -0.785263, 0.619162, 0, 8.69526, 5.56915)
+
+[node name="Camera3d" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.687329, 0.726347, 0, -0.726347, 0.687329, 0.166445, 9.07803, 7.79118)
+visible = false
+fov = 74.2111
+
+[node name="terrainRing" parent="." instance=ExtResource("1_623yl")]
+
+[node name="CameraFoci3D" parent="." instance=ExtResource("2_rtolc")]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 7, 0)

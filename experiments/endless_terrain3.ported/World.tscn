@@ -1,0 +1,50 @@
+[gd_scene load_steps=9 format=3 uid="uid://dqrvnk1slgthr"]
+
+[ext_resource type="Texture2D" uid="uid://doa3yapea4iu0" path="res://textures/Rocks006_2K/Rocks006_2K_Color.png" id="2"]
+[ext_resource type="PackedScene" path="res://Player.tscn" id="3"]
+[ext_resource type="Script" path="res://terrain/world/WorldTerrain.gd" id="4"]
+[ext_resource type="Script" path="res://testing/TerrainGenerator.gd" id="5"]
+
+[sub_resource type="PlaneMesh" id="1"]
+
+[sub_resource type="BoxShape3D" id="9"]
+
+[sub_resource type="StandardMaterial3D" id="8"]
+albedo_texture = ExtResource("2")
+
+[sub_resource type="SphereMesh" id="7"]
+material = SubResource("8")
+radius = 2.5
+height = 5.0
+radial_segments = 12
+rings = 6
+
+[node name="World3D" type="Node3D"]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 40, -50)
+light_energy = 0.2
+
+[node name="TerrainGenerator" type="Node3D" parent="."]
+script = ExtResource("5")
+
+[node name="WorldTerrain" type="Node3D" parent="."]
+transform = Transform3D(-1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 40, -50)
+visible = false
+script = ExtResource("4")
+
+[node name="WaterFloor" type="MeshInstance3D" parent="."]
+transform = Transform3D(100, 0, 0, 0, 1, 0, 0, 0, 100, -0.110084, -0.590457, -0.0605419)
+mesh = SubResource("1")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="WaterFloor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterFloor/StaticBody3D"]
+shape = SubResource("9")
+
+[node name="DebugShadingBall" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -2)
+mesh = SubResource("7")
+
+[node name="Player" parent="." instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.93463, 8.07045, 0)

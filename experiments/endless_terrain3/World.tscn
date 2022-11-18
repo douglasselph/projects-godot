@@ -85,11 +85,11 @@ transform = Transform( -1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.7
 light_energy = 0.2
 
 [node name="TerrainGenerator" type="Spatial" parent="."]
-visible = false
 script = ExtResource( 5 )
 
 [node name="WorldTerrain" type="Spatial" parent="."]
 transform = Transform( -1, 6.18172e-08, -6.18172e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 40, -50 )
+visible = false
 script = ExtResource( 4 )
 
 [node name="WaterFloor" type="MeshInstance" parent="."]
