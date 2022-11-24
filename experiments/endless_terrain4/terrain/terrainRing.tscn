@@ -1,29 +1,33 @@
 [gd_scene load_steps=10 format=3 uid="uid://dmim4jiq5k8cs"]
 
 [ext_resource type="Shader" path="res://terrain/terrainRing.gdshader" id="1_jhw7h"]
-[ext_resource type="Texture2D" uid="uid://yk2bqxn22il" path="res://map/Jouyland-biomes.png" id="2_6snlt"]
-[ext_resource type="Texture2D" uid="uid://1a6yc63kuat2" path="res://map/Jouyland-heightmap.png" id="3_imhm3"]
+[ext_resource type="Texture2D" uid="uid://c8dnsir33x2rh" path="res://terrain/sample_albedo.png" id="2_lr78x"]
+[ext_resource type="Texture2D" uid="uid://c56kd31c428em" path="res://terrain/sample_heightmap.png" id="3_dedhp"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_m52ed"]
+frequency = 0.323
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_xqdcq"]
+width = 50
+height = 50
 noise = SubResource("FastNoiseLite_m52ed")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xfs3v"]
+resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("1_jhw7h")
-shader_parameter/HeightmapLandAmplitude = null
-shader_parameter/HeightmapWaterAmplitude = null
-shader_parameter/NoiseAmplitude = null
-shader_parameter/albedo = ExtResource("2_6snlt")
-shader_parameter/heightmap = ExtResource("3_imhm3")
+shader_parameter/HeightmapLandAmplitude = 1.0
+shader_parameter/HeightmapWaterAmplitude = 1.0
+shader_parameter/NoiseAmplitude = 1.0
+shader_parameter/albedo = ExtResource("2_lr78x")
+shader_parameter/heightmap = ExtResource("3_dedhp")
 shader_parameter/noise = SubResource("NoiseTexture2D_xqdcq")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_rk3rg"]
 material = SubResource("ShaderMaterial_xfs3v")
-size = Vector2(50, 50)
-subdivide_width = 20
-subdivide_depth = 20
+size = Vector2(100, 100)
+subdivide_width = 60
+subdivide_depth = 60
 
 [sub_resource type="GDScript" id="GDScript_xqfri"]
 script/source = "extends MeshInstance3D
@@ -31,6 +35,16 @@ script/source = "extends MeshInstance3D
 @export var focus_size: Vector2 = Vector2(1.0, 1.0)
 @export var focus_subdivide_width: int = 4
 @export var focus_subdivide_depth: int = 4 
+
+@export var albedo: CompressedTexture2D:
+	set(value):
+		set_albedo(value)
+
+
+@export var heightmap: CompressedTexture2D:
+	set(value):
+		set_heightmap(value)
+
 
 const debug = 0
 
@@ -198,6 +212,18 @@ func _applyFocus():
 	self.mesh = st.commit()
 
 
+func set_albedo(value: CompressedTexture2D):
+	var pmesh = self.mesh as PlaneMesh
+	var shader: ShaderMaterial = pmesh.material as ShaderMaterial
+	shader.set_shader_parameter(\"albedo\", value)
+
+
+func set_heightmap(value: CompressedTexture2D):
+	var pmesh = self.mesh as PlaneMesh
+	var shader: ShaderMaterial = pmesh.material as ShaderMaterial
+	shader.set_shader_parameter(\"heightmap\", value)
+	
+
 enum Direction { Forward, Reverse }
 
 class ComputeLine:
@@ -244,7 +270,7 @@ class ComputeLine:
 		return incoming
 
 	
-class ComputeFocusLine extends ComputeLine:
+class ComputeFocusLine:
 	# Incoming
 	var start: float
 	var end: float
@@ -256,6 +282,14 @@ class ComputeFocusLine extends ComputeLine:
 	# Outgoing
 	var num_vertex_before_focus: int
 	
+	# Private
+	var _tool: ComputeLine
+	
+	
+	func _init():
+		_tool = ComputeLine.new()
+
+
 	func compute() -> Array:
 		var coords = []
 		
@@ -269,9 +303,9 @@ class ComputeFocusLine extends ComputeLine:
 		var use_end = focus_start
 		var use_dist = use_end - start
 		var num_steps = num_vertex_before_focus
-		var step_sizes = _compute_step_sizes(block_size, use_dist, num_steps)
+		var step_sizes = _tool._compute_step_sizes(block_size, use_dist, num_steps)
 		
-		coords = _apply_step_sizes(step_sizes, block_size, start, Direction.Forward)
+		coords = _tool._apply_step_sizes(step_sizes, block_size, start, Direction.Forward)
 		
 		# Append on focus coords
 		coords.append_array(
@@ -281,10 +315,10 @@ class ComputeFocusLine extends ComputeLine:
 		# Append coords after focus
 		use_dist = end - focus_end
 		num_steps = num_vertex_after_focus
-		step_sizes = _compute_step_sizes(block_size, use_dist, num_steps)
+		step_sizes = _tool._compute_step_sizes(block_size, use_dist, num_steps)
 		
-		var more_coords = _apply_step_sizes(step_sizes, block_size, end, Direction.Reverse)
-		coords.append_array(_reverse(more_coords))
+		var more_coords = _tool._apply_step_sizes(step_sizes, block_size, end, Direction.Reverse)
+		coords.append_array(_tool._reverse(more_coords))
 	
 		return coords
 
@@ -302,12 +336,21 @@ class ComputeFocusLine extends ComputeLine:
 		return list
 
 
-class ComputeEdgeLine extends ComputeLine:
+class ComputeEdgeLine:
+	# Incoming
 	var start: float
 	var end: float
 	var block_size: float
 	var total_num_vertex: int
 	
+	# Private
+	var _tool: ComputeLine
+	
+	
+	func _init():
+		_tool = ComputeLine.new()
+
+
 	func compute() -> Array:
 		var coords = []
 		
@@ -321,17 +364,17 @@ class ComputeEdgeLine extends ComputeLine:
 		if is_even:
 			use_dist -= block_size / 2
 		
-		var step_sizes = _compute_step_sizes(block_size, use_dist, num_steps)
+		var step_sizes = _tool._compute_step_sizes(block_size, use_dist, num_steps)
 		
-		coords = _apply_step_sizes(step_sizes, block_size, start, Direction.Forward)
+		coords = _tool._apply_step_sizes(step_sizes, block_size, start, Direction.Forward)
 		
 		# If odd number of points, add in center position.
 		if not is_even:
 			coords.append(center_pos)
 
 		# Build coordinates after center position
-		var more_coords = _apply_step_sizes(step_sizes, block_size, end, Direction.Reverse)
-		coords.append_array(_reverse(more_coords))
+		var more_coords = _tool._apply_step_sizes(step_sizes, block_size, end, Direction.Reverse)
+		coords.append_array(_tool._reverse(more_coords))
 
 		return coords
 
@@ -366,9 +409,9 @@ class ComputeUV:
 [node name="terrainRing" type="MeshInstance3D"]
 mesh = SubResource("PlaneMesh_rk3rg")
 script = SubResource("GDScript_xqfri")
-focus_size = Vector2(10, 10)
-focus_subdivide_width = 10
-focus_subdivide_depth = 10
+focus_size = Vector2(50, 50)
+focus_subdivide_width = 20
+focus_subdivide_depth = 20
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
