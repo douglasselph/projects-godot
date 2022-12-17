@@ -1,8 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://dmim4jiq5k8cs"]
+[gd_scene load_steps=10 format=3 uid="uid://you4ijepobde"]
 
-[ext_resource type="Shader" path="res://terrain/terrainRing.gdshader" id="1_jhw7h"]
-[ext_resource type="Texture2D" uid="uid://c8dnsir33x2rh" path="res://terrain/sample_albedo.png" id="2_lr78x"]
-[ext_resource type="Texture2D" uid="uid://c56kd31c428em" path="res://terrain/sample_heightmap.png" id="3_dedhp"]
+[ext_resource type="Shader" path="res://terrain/ring/terrainRing.gdshader" id="1_d0e6o"]
+[ext_resource type="Texture2D" uid="uid://c8dnsir33x2rh" path="res://terrain/ring/sample_albedo.png" id="2_m30au"]
+[ext_resource type="Texture2D" uid="uid://c56kd31c428em" path="res://terrain/ring/sample_heightmap.png" id="3_e5umd"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_m52ed"]
 frequency = 0.323
@@ -15,14 +15,12 @@ noise = SubResource("FastNoiseLite_m52ed")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xfs3v"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("1_jhw7h")
+shader = ExtResource("1_d0e6o")
 shader_parameter/HeightmapLandAmplitude = 1.0
 shader_parameter/HeightmapWaterAmplitude = 1.0
 shader_parameter/NoiseAmplitude = 1.0
-shader_parameter/albedo = ExtResource("2_6snlt")
-shader_parameter/heightmap = ExtResource("3_imhm3")
-# shader_parameter/albedo = ExtResource("2_lr78x")
-# shader_parameter/heightmap = ExtResource("3_dedhp")
+shader_parameter/albedo = ExtResource("2_m30au")
+shader_parameter/heightmap = ExtResource("3_e5umd")
 shader_parameter/noise = SubResource("NoiseTexture2D_xqdcq")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_rk3rg"]
@@ -148,7 +146,6 @@ func _applyFocus():
 	#
 	# EDGE ROW POSITIONS
 	#
-	
 	var computeEdgeLine = ComputeEdgeLine.new()
 	computeEdgeLine.block_size = focus_block_size.y
 	computeEdgeLine.start = start_pos.y
