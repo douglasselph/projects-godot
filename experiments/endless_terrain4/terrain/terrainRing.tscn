@@ -19,10 +19,8 @@ shader = ExtResource("1_jhw7h")
 shader_parameter/HeightmapLandAmplitude = 1.0
 shader_parameter/HeightmapWaterAmplitude = 1.0
 shader_parameter/NoiseAmplitude = 1.0
-shader_parameter/albedo = ExtResource("2_6snlt")
-shader_parameter/heightmap = ExtResource("3_imhm3")
-# shader_parameter/albedo = ExtResource("2_lr78x")
-# shader_parameter/heightmap = ExtResource("3_dedhp")
+shader_parameter/albedo = ExtResource("2_lr78x")
+shader_parameter/heightmap = ExtResource("3_dedhp")
 shader_parameter/noise = SubResource("NoiseTexture2D_xqdcq")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_rk3rg"]

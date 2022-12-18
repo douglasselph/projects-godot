@@ -12,6 +12,7 @@ contintentHeightmap = ExtResource("2_eokym")
 
 [node name="terrainRing" parent="." instance=ExtResource("1_vc2vf")]
 albedo = ExtResource("4_7poti")
+heightmap = ExtResource("2_eokym")
 
 [node name="CameraFoci3D" parent="." instance=ExtResource("2_mrypd")]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 2.74398, 25.5096, 30.9456)
