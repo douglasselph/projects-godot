@@ -12,6 +12,8 @@ const DECEL := 15.0
 const JUMP_SPEED := 15
 const GRAVITY := -45
 
+signal moved(amount: Vector2)
+
 
 func _process(delta: float):
 	_move(delta)
@@ -33,6 +35,9 @@ func _move(delta: float):
 	set_velocity(_velocity)
 	set_up_direction(Vector3.UP)
 	move_and_slide()
+	
+	_notify_of_movement()
+	_reposition_at_zero()
 
 
 func _move_vertically(dir: Vector3, delta: float) -> Vector3:
@@ -90,3 +95,11 @@ func _h_accel(dir: Vector3, delta: float) -> Vector3:
 	_velocity.z = vel_2d.z
 	
 	return _velocity
+
+
+func _notify_of_movement():
+	moved.emit(Vector2(position.x, position.z))
+	
+
+func _reposition_at_zero():
+	position = Vector3(0, position.y, 0)

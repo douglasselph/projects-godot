@@ -48,6 +48,11 @@ script/source = "extends MeshInstance3D
 
 const debug = 0
 
+var _collisionShape: HeightMapShape3D:
+	get:
+		return $StaticBody3D/CollisionShape3D.shape as HeightMapShape3D
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	_applyFocus()
@@ -223,6 +228,49 @@ func set_heightmap(value: CompressedTexture2D):
 	shader.set_shader_parameter(\"heightmap\", value)
 	
 
+func _updateCollisionShape():
+	var center_pos = Vector2(position.x, position.z)
+	var half_focus_size = focus_size / 2
+	var focus_start_pos = Vector2(
+		center_pos.x - half_focus_size.x,
+		center_pos.y - half_focus_size.y
+	)
+	var focus_end_pos = Vector2(
+		center_pos.x + half_focus_size.x,
+		center_pos.y + half_focus_size.y
+	)
+	
+	
+	var pmesh = self.mesh as PlaneMesh
+	var full_size = Vector2(pmesh.size.x, pmesh.size.y)
+	var half_full_size = full_size / 2
+	var start_pos = Vector2(
+		center_pos.x - half_full_size.x,
+		center_pos.y - half_full_size.y
+	)
+	var end_pos = Vector2(
+		center_pos.x + half_full_size.x,
+		center_pos.y + half_full_size.y
+	)
+	var computeUV = ComputeUV.new(start_pos, end_pos)
+	var vertex = Vector3()
+	var uv_remapped = computeUV.map(vertex.x, vertex.z)
+	
+	var size = Vector2(2, 2)
+	var data = PackedFloat32Array()
+	data.resize(size.x * size.y)
+	var index = 0
+	for y in range(size.y):
+		for x in range(size.x):
+			data.set(index, 0)
+			index += 1
+	
+	_collisionShape.map_width = size.x
+	_collisionShape.map_height = size.y
+	_collisionShape.map_data = data
+	
+	
+	
 enum Direction { Forward, Reverse }
 
 class ComputeLine:
@@ -403,7 +451,7 @@ class ComputeUV:
 
 "
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_cjqpb"]
+[sub_resource type="HeightMapShape3D" id="HeightMapShape3D_ak6ra"]
 
 [node name="terrainRing" type="MeshInstance3D"]
 mesh = SubResource("PlaneMesh_rk3rg")
@@ -415,4 +463,4 @@ focus_subdivide_depth = 20
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("BoxShape3D_cjqpb")
+shape = SubResource("HeightMapShape3D_ak6ra")
