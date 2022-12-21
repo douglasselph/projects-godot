@@ -38,6 +38,11 @@ _global_script_classes=[{
 "class": &"Player",
 "language": &"GDScript",
 "path": "res://player/Player.gd"
+}, {
+"base": "MeshInstance3D",
+"class": &"TerrainRing",
+"language": &"GDScript",
+"path": "res://terrain/ring/terrainRing.gd"
 }]
 _global_script_class_icons={
 "ContinentMap": "",
@@ -45,7 +50,8 @@ _global_script_class_icons={
 "DiamondRandomValue": "",
 "DiamondSquareGrid": "",
 "DiamondSquareGridTest": "",
-"Player": ""
+"Player": "",
+"TerrainRing": ""
 }
 
 [application]
