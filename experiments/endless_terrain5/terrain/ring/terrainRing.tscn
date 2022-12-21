@@ -1,8 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://you4ijepobde"]
+[gd_scene load_steps=9 format=3 uid="uid://you4ijepobde"]
 
 [ext_resource type="Shader" path="res://terrain/ring/terrainRing.gdshader" id="1_d0e6o"]
 [ext_resource type="Texture2D" uid="uid://c8dnsir33x2rh" path="res://terrain/ring/sample_albedo.png" id="2_m30au"]
-[ext_resource type="Texture2D" uid="uid://c56kd31c428em" path="res://terrain/ring/sample_heightmap.png" id="3_e5umd"]
 [ext_resource type="Script" path="res://terrain/ring/terrainRing.gd" id="4_uhy0j"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_m52ed"]
@@ -22,7 +21,6 @@ shader_parameter/HeightmapWaterAmplitude = 1.0
 shader_parameter/NoiseAmplitude = 1.0
 shader_parameter/OffsetUV = null
 shader_parameter/albedo = ExtResource("2_m30au")
-shader_parameter/heightmap = ExtResource("3_e5umd")
 shader_parameter/heightmaps = null
 shader_parameter/noise = SubResource("NoiseTexture2D_xqdcq")
 
