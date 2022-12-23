@@ -12,10 +12,7 @@ extends MeshInstance3D
 		set_albedo(value)
 
 
-@export var heightmaps: Array[CompressedTexture2D]:
-	set(value):
-		set_heightmaps(value)
-
+@export var heightmaps: Array[CompressedTexture2D]
 
 @export var offsetUV: Vector2 = Vector2.ZERO:
 	set(value):
@@ -189,7 +186,11 @@ func _applyFocus():
 	st.create_from(arrayMesh, 0)
 	st.generate_normals()
 	
+	var reworked_mesh = st.commit()
+	
 	self.mesh = st.commit()
+	
+	set_heightmaps(heightmaps)
 
 
 func set_albedo(value: CompressedTexture2D):
@@ -199,14 +200,12 @@ func set_albedo(value: CompressedTexture2D):
 
 
 func set_heightmaps(value: Array[CompressedTexture2D]):
-	heightmaps = value
 	var pmesh = self.mesh as PlaneMesh
 	var shader: ShaderMaterial = pmesh.material as ShaderMaterial
 	shader.set_shader_parameter("heightmaps", value)
 
 
 func set_offset_uv(value: Vector2):
-	offsetUV = value
 	var pmesh = self.mesh as PlaneMesh
 	var shader: ShaderMaterial = pmesh.material as ShaderMaterial
 	shader.set_shader_parameter("OffsetUV", value)

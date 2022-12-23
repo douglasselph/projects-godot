@@ -3,15 +3,12 @@ extends Node3D
 @export var contintentHeightmap: CompressedTexture2D
 
 var _continentMap: ContinentMap
-var _terrainRing: TerrainRing:
-	get:
-		return $terrainRing
 
 
 func _ready():
 	_continentMap = ContinentMap.new(contintentHeightmap.get_image())
 	
-	var heightmaps = Array()
+	var heightmaps: Array[CompressedTexture2D] = Array()
 	heightmaps.append(_continentMap)
 	heightmaps.append(_continentMap)
 	heightmaps.append(_continentMap)
@@ -21,7 +18,7 @@ func _ready():
 	heightmaps.append(_continentMap)
 	heightmaps.append(_continentMap)
 	heightmaps.append(_continentMap)
-	_terrainRing.set_heightmaps(heightmaps)
+	$terrainRing.heightmaps = heightmaps
 
 
 # Unit tests
