@@ -23,3 +23,5 @@ skeleton = NodePath("../terrainRing")
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 22.3608, 30.764, 0)
 
 [node name="Player" parent="." instance=ExtResource("6_p3t84")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]

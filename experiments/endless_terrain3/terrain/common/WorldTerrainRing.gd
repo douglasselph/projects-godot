@@ -1,7 +1,7 @@
 #
 # STORAGE STRUCTURE
 # -----------------
-# This class is intended to whole the entire world mesh structure that holds the terrain the player can see.
+# This class is intended to contain the entire world mesh structure that holds the terrain the player can see.
 # As the player moves, eventually they move out of their central box, in which case the entire mesh is reset
 # effectively moving the world to the player, rather than the player moving through the world.
 #
