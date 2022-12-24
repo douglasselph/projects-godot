@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://4rwm0gvdog0v"]
+[gd_scene load_steps=9 format=3 uid="uid://4rwm0gvdog0v"]
 
 [ext_resource type="PackedScene" uid="uid://you4ijepobde" path="res://terrain/ring/terrainRing.tscn" id="1_vc2vf"]
 [ext_resource type="Script" path="res://world.gd" id="1_yb16c"]
@@ -6,12 +6,26 @@
 [ext_resource type="PackedScene" uid="uid://d3y3x2mbx25h7" path="res://camera/CameraFoci3D.tscn" id="2_mrypd"]
 [ext_resource type="Texture2D" uid="uid://6gk2phiyc8vr" path="res://map/Jouyland-biomes-1000xd.jpeg" id="4_7poti"]
 [ext_resource type="PackedScene" uid="uid://ckbeuoy2q5fkg" path="res://player/Player.tscn" id="6_p3t84"]
+[ext_resource type="PackedScene" uid="uid://bso3b3e37ofxh" path="res://terrain/ring/focusRing.tscn" id="7_n56et"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2stit"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 1, 1, 1e-05),
+"attribute_data": PackedByteArray(0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0),
+"format": 4115,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 2, 0, 3, 0),
+"primitive": 3,
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 255, 255, 255, 255)
+}]
 
 [node name="world" type="Node3D"]
 script = ExtResource("1_yb16c")
 contintentHeightmap = ExtResource("2_eokym")
 
 [node name="terrainRing" parent="." instance=ExtResource("1_vc2vf")]
+visible = false
 albedo = ExtResource("4_7poti")
 
 [node name="CameraFoci3D" parent="." instance=ExtResource("2_mrypd")]
@@ -25,3 +39,6 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 [node name="Player" parent="." instance=ExtResource("6_p3t84")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="focusRing" parent="." instance=ExtResource("7_n56et")]
+mesh = SubResource("ArrayMesh_2stit")

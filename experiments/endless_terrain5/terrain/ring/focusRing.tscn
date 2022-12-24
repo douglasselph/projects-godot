@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bso3b3e37ofxh"]
+
+[ext_resource type="Script" path="res://terrain/ring/focusRing.gd" id="1_7ctl6"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ny22s"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 1, 1, 1e-05),
+"attribute_data": PackedByteArray(0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0),
+"format": 4115,
+"index_count": 6,
+"index_data": PackedByteArray(2, 0, 1, 0, 0, 0, 3, 0, 2, 0, 0, 0),
+"primitive": 3,
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 255, 255, 255, 255)
+}]
+
+[node name="focusRing" type="MeshInstance3D"]
+mesh = SubResource("ArrayMesh_ny22s")
+script = ExtResource("1_7ctl6")

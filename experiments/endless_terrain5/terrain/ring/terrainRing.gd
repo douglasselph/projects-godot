@@ -201,8 +201,9 @@ func set_albedo(value: CompressedTexture2D):
 
 func set_heightmaps(value: Array[CompressedTexture2D]):
 	var pmesh = self.mesh as PlaneMesh
-	var shader: ShaderMaterial = pmesh.material as ShaderMaterial
-	shader.set_shader_parameter("heightmaps", value)
+	# FAIL HERE:
+	#var shader: ShaderMaterial = pmesh.material as ShaderMaterial
+	#shader.set_shader_parameter("heightmaps", value)
 
 
 func set_offset_uv(value: Vector2):
