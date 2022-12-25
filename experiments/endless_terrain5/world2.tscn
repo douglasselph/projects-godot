@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://cvqhx40ab7jq8"]
+
+[ext_resource type="Script" path="res://world2.gd" id="1_yxodl"]
+[ext_resource type="PackedScene" uid="uid://bftmpmimgegy8" path="res://terrain/ring/focusRing.tscn" id="3_mc4qr"]
+[ext_resource type="Shader" path="res://terrain/ring/focusRing.gdshader" id="4_5k2qk"]
+[ext_resource type="Texture2D" uid="uid://b3mca6u27xc7t" path="res://icon.svg" id="4_sva8s"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_gxvhk"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 2, 2, 1e-05),
+"attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0),
+"format": 4119,
+"index_count": 6,
+"index_data": PackedByteArray(0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 1, 0),
+"primitive": 3,
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191)
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dwp86"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_5k2qk")
+shader_parameter/albedo = ExtResource("4_sva8s")
+
+[node name="World2" type="Node3D"]
+script = ExtResource("1_yxodl")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 3, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2, 2)
+
+[node name="focusRing" parent="." instance=ExtResource("3_mc4qr")]
+mesh = SubResource("ArrayMesh_gxvhk")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("ShaderMaterial_dwp86")
+albedo = ExtResource("4_sva8s")
+fullSize = Vector2(2, 2)
