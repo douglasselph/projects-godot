@@ -186,8 +186,6 @@ func _applyFocus():
 	st.create_from(arrayMesh, 0)
 	st.generate_normals()
 	
-	var reworked_mesh = st.commit()
-	
 	self.mesh = st.commit()
 	
 	set_heightmaps(heightmaps)

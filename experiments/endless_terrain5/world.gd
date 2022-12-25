@@ -1,24 +1,28 @@
 extends Node3D
 
+@export var continentAlbedo: CompressedTexture2D
 @export var contintentHeightmap: CompressedTexture2D
+
 
 var _continentMap: ContinentMap
 
 
 func _ready():
-	_continentMap = ContinentMap.new(contintentHeightmap.get_image())
-	
-	var heightmaps: Array[CompressedTexture2D] = Array()
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	heightmaps.append(_continentMap)
-	$terrainRing.heightmaps = heightmaps
+#	_continentMap = ContinentMap.new(contintentHeightmap.get_image())
+#
+#	var heightmaps: Array[CompressedTexture2D] = Array()
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	heightmaps.append(_continentMap)
+#	$terrainRing.heightmaps = heightmaps
+
+	$focusRing.albedo = continentAlbedo
 
 
 # Unit tests

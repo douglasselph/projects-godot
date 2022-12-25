@@ -1,31 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://you4ijepobde"]
+[gd_scene load_steps=6 format=3 uid="uid://you4ijepobde"]
 
 [ext_resource type="Shader" path="res://terrain/ring/terrainRing.gdshader" id="1_d0e6o"]
-[ext_resource type="Texture2D" uid="uid://c8dnsir33x2rh" path="res://terrain/ring/sample_albedo.png" id="2_m30au"]
 [ext_resource type="Script" path="res://terrain/ring/terrainRing.gd" id="4_uhy0j"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_m52ed"]
-frequency = 0.323
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_xqdcq"]
-width = 50
-height = 50
-noise = SubResource("FastNoiseLite_m52ed")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_xfs3v"]
-resource_local_to_scene = true
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xrfse"]
 render_priority = 0
 shader = ExtResource("1_d0e6o")
-shader_parameter/HeightmapLandAmplitude = 1.0
-shader_parameter/HeightmapWaterAmplitude = 1.0
-shader_parameter/NoiseAmplitude = 1.0
+shader_parameter/HeightmapLandAmplitude = null
+shader_parameter/HeightmapWaterAmplitude = null
+shader_parameter/NoiseAmplitude = null
 shader_parameter/OffsetUV = null
-shader_parameter/albedo = ExtResource("2_m30au")
 shader_parameter/heightmaps = null
-shader_parameter/noise = SubResource("NoiseTexture2D_xqdcq")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_rk3rg"]
-material = SubResource("ShaderMaterial_xfs3v")
+[sub_resource type="PlaneMesh" id="PlaneMesh_gedip"]
+material = SubResource("ShaderMaterial_xrfse")
 size = Vector2(100, 100)
 subdivide_width = 60
 subdivide_depth = 60
@@ -33,7 +21,7 @@ subdivide_depth = 60
 [sub_resource type="HeightMapShape3D" id="HeightMapShape3D_ak6ra"]
 
 [node name="terrainRing" type="MeshInstance3D"]
-mesh = SubResource("PlaneMesh_rk3rg")
+mesh = SubResource("PlaneMesh_gedip")
 script = ExtResource("4_uhy0j")
 heightmaps = []
 
