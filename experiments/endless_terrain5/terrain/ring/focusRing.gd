@@ -9,10 +9,17 @@ extends MeshInstance3D
 		_update_albedo(value)
 
 
-@export var fullSize: Vector2 = Vector2(1, 1):
+@export var fullSize: Vector2 = Vector2(10.0, 10.0):
 	get: return fullSize
 	set(value):
 		fullSize = value
+		_recreate()
+		
+
+@export var focusSize: Vector2 = Vector2(4.0, 4.0):
+	get: return focusSize
+	set(value):
+		focusSize = value
 		_recreate()
 
 
