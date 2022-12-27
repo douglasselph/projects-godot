@@ -14,13 +14,19 @@ extends MeshInstance3D
 	set(value):
 		fullSize = value
 		_recreate()
+
+
+@export var fullNumPts: int = 10
 		
 
-@export var focusSize: Vector2 = Vector2(4.0, 4.0):
+@export var focusSize: Vector2 = Vector2(2.0, 2.0):
 	get: return focusSize
 	set(value):
 		focusSize = value
 		_recreate()
+
+
+@export var focusNumPts: int = 6
 
 
 func _ready():
@@ -28,7 +34,7 @@ func _ready():
 	
 	
 func _recreate():
-	_createEvolve1()
+	_createEvolve2()
 
 
 func _update_albedo(value: CompressedTexture2D):
@@ -66,6 +72,33 @@ func _createEvolve1():
 	_update_albedo(albedo)
 	
 
+func _createEvolve2():
+	
+	var s = fullSize
+	var st = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	
+	st.set_uv(Vector2(0, 1))
+	st.add_vertex(Vector3(0, 0, 0))
+	st.set_uv(Vector2(1, 0))
+	st.add_vertex(Vector3(s.x, s.y, 0))
+	st.set_uv(Vector2(1, 1))
+	st.add_vertex(Vector3(s.x, 0, 0))
+	st.set_uv(Vector2(0, 1))
+	st.add_vertex(Vector3(0, 0, 0))
+	st.set_uv(Vector2(0, 0))
+	st.add_vertex(Vector3(0, s.y, 0))
+	st.set_uv(Vector2(1, 0))
+	st.add_vertex(Vector3(s.x, s.y, 0))
+	
+	st.index()
+	st.generate_normals()
+	st.generate_tangents()
+
+	mesh = st.commit()
+	
+	_update_albedo(albedo)
+	
 func _createSimple2():
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)

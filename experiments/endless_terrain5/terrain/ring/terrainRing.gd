@@ -26,7 +26,6 @@ var _collisionShape: HeightMapShape3D:
 		return $StaticBody3D/CollisionShape3D.shape as HeightMapShape3D
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	_applyFocus()
 

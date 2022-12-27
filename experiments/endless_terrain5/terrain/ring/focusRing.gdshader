@@ -4,5 +4,8 @@ uniform sampler2D albedo;
 uniform sampler2D heightmap;
 
 void fragment() {
-	ALBEDO = texture(albedo, UV).rgb;
+	vec2 uv = vec2(UV);
+	uv.x = uv.x - floor(uv.x);
+	uv.y = uv.y - floor(uv.y);
+	ALBEDO = texture(albedo, uv).rgb;
 }

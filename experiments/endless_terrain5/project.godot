@@ -44,6 +44,11 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://player/Player.gd"
 }, {
+"base": "Node",
+"class": &"TerrainFunnel",
+"language": &"GDScript",
+"path": "res://terrain/texture/TerrainFunnel.gd"
+}, {
 "base": "MeshInstance3D",
 "class": &"TerrainRing",
 "language": &"GDScript",
@@ -57,6 +62,7 @@ _global_script_class_icons={
 "DiamondSquareGridTest": "",
 "FocusRing": "",
 "Player": "",
+"TerrainFunnel": "",
 "TerrainRing": ""
 }
 
