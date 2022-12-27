@@ -10,6 +10,16 @@ config_version=5
 
 _global_script_classes=[{
 "base": "Node",
+"class": &"BlockFunnel",
+"language": &"GDScript",
+"path": "res://terrain/block/BlockFunnel.gd"
+}, {
+"base": "Node",
+"class": &"BlockFunnelTest",
+"language": &"GDScript",
+"path": "res://test/terrain/block/BlockFunnelTest.gd"
+}, {
+"base": "Node",
 "class": &"ContinentMap",
 "language": &"GDScript",
 "path": "res://terrain/diamond/ContinentMap.gd"
@@ -44,17 +54,14 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://player/Player.gd"
 }, {
-"base": "Node",
-"class": &"TerrainFunnel",
-"language": &"GDScript",
-"path": "res://terrain/texture/TerrainFunnel.gd"
-}, {
 "base": "MeshInstance3D",
 "class": &"TerrainRing",
 "language": &"GDScript",
 "path": "res://terrain/ring/terrainRing.gd"
 }]
 _global_script_class_icons={
+"BlockFunnel": "",
+"BlockFunnelTest": "",
 "ContinentMap": "",
 "ContinentMapTest": "",
 "DiamondRandomValue": "",
@@ -62,7 +69,6 @@ _global_script_class_icons={
 "DiamondSquareGridTest": "",
 "FocusRing": "",
 "Player": "",
-"TerrainFunnel": "",
 "TerrainRing": ""
 }
 
