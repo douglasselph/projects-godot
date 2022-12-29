@@ -72,12 +72,19 @@ extends Node
 # this point reflects player movement. The computation will use the BLOCK CENTER WORLD SIZE, and
 # round to the corner nearest to the existing center point.
 #
+# BLOCK UNITS: Measured where one unit is one full block. So if in the center ring there are 
+# is a base block size of 4, with 16 total blocks, the upper left corner of the positions would 
+# be from (-2, -2) to (1, 1)
+#
+var numRings: int:
+	get: 
+		return _ringDepth
+		
 
 var _numBlocksPerSide: int
 var _blockPointSize: int
 var _ringDepth: int
 var _blockCenterWorldSize: float
-var _pixelsPerPoint: float
 var _gridWorldCenter: Vector2 = Vector2(0, 0)
 var _blocks: Array[_Block] = []
 
@@ -85,26 +92,17 @@ var _blocks: Array[_Block] = []
 class Block:
 	var worldUL: Vector2	# The world upper left of this block
 	var worldLR: Vector2	# The world lower right of this block
-	var size: Vector2i		# The size of this block in points (useful for image generation)
+	var pointSize: Vector2i	# The size of this block in points (useful for image generation)
 
 
 class _Block:
-	var position: Vector2i  # The position of this block relative to the other blocks
-	var factor: int
-
-	func _init(pos: Vector2i, factor: int):
-		position = pos
-		self.factor = factor
-		
+	var position: Vector2i  # The upper left position of this block in block units (see above)
+	var ringPos: int		# The ringPos is the position in the ring this block resides
 	
-	func computeWorldPosition(worldCenter: Vector2, pixelsPerPoint: float) -> Vector2:
-		return position * pixelsPerPoint
-
-
-	func computeWorldSize(centerBlockSize: float) -> Vector2:
-		return Vector2(centerBlockSize, centerBlockSize) * factor
+	func _init(pos: Vector2i, ringPos: int):
+		position = pos
+		self.ringPos = ringPos
 		
-
 
 class Params:
 	var baseBlockFactor: int = 2			# Power of 2 used to determine the number of blocks per side
@@ -118,7 +116,6 @@ func _init(params: Params):
 	_blockPointSize = pow(2, params.blockPointSizeFactor)
 	_ringDepth = params.ringDepth
 	_blockCenterWorldSize = params.blockCenterWorldSize
-	_pixelsPerPoint = _blockCenterWorldSize / _blockPointSize
 	_computeBlockPositions()
 
 
@@ -136,16 +133,17 @@ func setGridWorldCenter(point: Vector2):
 # RingPos of 2 refers to the blocks of the second outer ring, etc.
 #
 func queryBlocks(ringPos: int) -> Array[Block]:
-	var factor = pow(2, ringPos+1)
+	var factor = pow(2, ringPos)
+	var blockWorldSize = Vector2i(Vector2i(_blockCenterWorldSize, _blockCenterWorldSize) * factor)
+	var blockPointSize = Vector2i(_blockPointSize, _blockPointSize)
 	var blocks: Array[Block] = []
 
 	for block in _blocks:
-		if block.factor == factor:
+		if block.ringPos == ringPos:
 			var create = Block.new()
-			create.worldUL = block.computeWorldPosition(_gridWorldCenter, _pixelsPerPoint)
-			var blockSize = block.computeWorldSize(_blockCenterWorldSize)
-			create.worldLR = create.worldUL + Vector2(blockSize)
-			create.size = Vector2i(_blockPointSize, _blockPointSize)
+			create.worldUL = Vector2(block.position * blockWorldSize)
+			create.worldLR = create.worldUL + Vector2(blockWorldSize)
+			create.pointSize = blockPointSize
 			blocks.append(create)
 
 	return blocks
@@ -158,25 +156,20 @@ func computeCenterPoint(playerPos: Vector2) -> Vector2:
 	var deltaPos = playerPos - _gridWorldCenter
 	var normalizedPos = deltaPos / _blockCenterWorldSize
 	var sign = normalizedPos.sign()
-	var roundedPos = Vector2(
+	var roundedNormalizedPos = Vector2(
 		floor(abs(normalizedPos.x)) * sign.x,
 		floor(abs(normalizedPos.y)) * sign.y
 	)
-	return roundedPos
+	return roundedNormalizedPos * _blockCenterWorldSize + _gridWorldCenter
 
 
 func _computeBlockPositions():
 	_blocks.clear()
-	for ringpos in range(_ringDepth+1):
-		var factor = pow(2, ringpos+1)
-		var start_posx = -_blockPointSize * _numBlocksPerSide/2 * factor
-		var start_posy = start_posx
-		var posx: int
-		var posy = start_posy
+	var adjust = -_numBlocksPerSide/2
+	for ringPos in range(_ringDepth+1):
 		for y in range(_numBlocksPerSide):
-			posx = start_posx
 			for x in range(_numBlocksPerSide):
-				if ringpos == 0 or y == 0 or y == _numBlocksPerSide-1 or x == 0 or x == _numBlocksPerSide-1:
-					_blocks.append(_Block.new(Vector2i(posx, posy), factor))
-				posx += _blockPointSize
-			posy += _blockPointSize
+				if ringPos == 0 or y == 0 or y == _numBlocksPerSide-1 or x == 0 or x == _numBlocksPerSide-1:
+					var posx = x + adjust
+					var posy = y + adjust
+					_blocks.append(_Block.new(Vector2i(posx, posy), ringPos))
