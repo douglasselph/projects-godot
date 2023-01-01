@@ -6,7 +6,7 @@ extends Node3D
 
 var _continentMap: ContinentMap
 
-
+ 
 func _ready():
 #	_continentMap = ContinentMap.new(contintentHeightmap.get_image())
 #

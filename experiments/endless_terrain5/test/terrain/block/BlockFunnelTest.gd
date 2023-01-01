@@ -125,8 +125,7 @@ func _computeCenterPoint_verifyRoundingToCenter(centerPoint: Vector2, playerPush
 		var playerPos = Vector2(value*playerPush.x, value*playerPush.y) + centerPoint
 		# Act
 		var blockFunnel = BlockFunnel.new(params)
-		blockFunnel.setGridWorldCenter(centerPoint)
-		var computedPoint = blockFunnel.computeCenterPoint(playerPos)
+		var computedPoint = blockFunnel.computeCenterPoint(centerPoint, playerPos)
 		# Assert
 		assert(computedPoint == centerPoint)
 
@@ -143,7 +142,7 @@ func _computeCenterPoint_verifyRoundingToLRIfOnOutsideUL(bounce: Vector2i):
 	var expectedCenterPos = Vector2(-blockWorldSize*bounce.x, -blockWorldSize*bounce.y)
 	# Act
 	var blockFunnel = BlockFunnel.new(params)
-	var computedPoint = blockFunnel.computeCenterPoint(playerPos)
+	var computedPoint = blockFunnel.computeCenterPoint(Vector2(0, 0), playerPos)
 	# Assert
 	assert(computedPoint == expectedCenterPos)
 	
@@ -160,7 +159,7 @@ func _computeCenterPoint_verifyRoundingToLLIfOnOutsideUR(bounce: Vector2i):
 	var expectedCenterPos = Vector2(blockWorldSize*bounce.x, -blockWorldSize*bounce.y)
 	# Act
 	var blockFunnel = BlockFunnel.new(params)
-	var computedPoint = blockFunnel.computeCenterPoint(playerPos)
+	var computedPoint = blockFunnel.computeCenterPoint(Vector2(0, 0), playerPos)
 	# Assert
 	assert(computedPoint == expectedCenterPos)
 	
@@ -177,7 +176,7 @@ func _computeCenterPoint_verifyRoundingToURIfOnOutsideLL(bounce: Vector2i):
 	var expectedCenterPos = Vector2(-blockWorldSize*bounce.x, blockWorldSize*bounce.y)
 	# Act
 	var blockFunnel = BlockFunnel.new(params)
-	var computedPoint = blockFunnel.computeCenterPoint(playerPos)
+	var computedPoint = blockFunnel.computeCenterPoint(Vector2(0, 0), playerPos)
 	# Assert
 	assert(computedPoint == expectedCenterPos)
 	
@@ -194,6 +193,6 @@ func _computeCenterPoint_verifyRoundingToULIfOnOutsideLR(bounce: Vector2i):
 	var expectedCenterPos = Vector2(blockWorldSize*bounce.x, blockWorldSize*bounce.y)
 	# Act
 	var blockFunnel = BlockFunnel.new(params)
-	var computedPoint = blockFunnel.computeCenterPoint(playerPos)
+	var computedPoint = blockFunnel.computeCenterPoint(Vector2(0, 0), playerPos)
 	# Assert
 	assert(computedPoint == expectedCenterPos)

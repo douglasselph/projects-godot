@@ -81,11 +81,17 @@ var numRings: int:
 		return _ringDepth
 		
 
+#
+# Used in the encoding of a world position into a UV value which identifies the terrain
+# index of the terrain array. See computeUV() 
+#
+const CHUNK_SIZE = 100
+
+
 var _numBlocksPerSide: int
 var _blockPointSize: int
 var _ringDepth: int
 var _blockCenterWorldSize: float
-var _gridWorldCenter: Vector2 = Vector2(0, 0)
 var _blocks: Array[_Block] = []
 
 
@@ -118,14 +124,9 @@ func _init(params: Params):
 	_blockCenterWorldSize = params.blockCenterWorldSize
 	_computeBlockPositions()
 
-
 #
-# Set the world center point for the grid.
+# PUBLIC FUNCTIONS
 #
-func setGridWorldCenter(point: Vector2):
-	_gridWorldCenter = point
-	
-
 #
 # Given the ring position query the list of blocks based on the current world center point.
 # RingPos of 0 refers to the central blocks.
@@ -152,17 +153,109 @@ func queryBlocks(ringPos: int) -> Array[Block]:
 # Compute the new center point based on a specialized rounding effect from the given 
 # input point, which is assumed to be the current layer position.
 #
-func computeCenterPoint(playerPos: Vector2) -> Vector2:
-	var deltaPos = playerPos - _gridWorldCenter
+func computeCenterPoint(gridWorldCenter: Vector2, playerPos: Vector2) -> Vector2:
+	var deltaPos = playerPos - gridWorldCenter
 	var normalizedPos = deltaPos / _blockCenterWorldSize
 	var sign = normalizedPos.sign()
 	var roundedNormalizedPos = Vector2(
 		floor(abs(normalizedPos.x)) * sign.x,
 		floor(abs(normalizedPos.y)) * sign.y
 	)
-	return roundedNormalizedPos * _blockCenterWorldSize + _gridWorldCenter
+	return roundedNormalizedPos * _blockCenterWorldSize + gridWorldCenter
 
 
+#
+# Given a world position, compute a specialized UV that identifies which block and position
+# on the block the texture lookup should be. This coded format will be much more efficient to
+# figure out which terrain map and position on it to use. The way this works is as follows:
+#
+# The UV value will have a value greater than zero.
+#
+# The whole number value after UV/CHUNK_SIZE identifies which ring the block is on.
+# The remainder of this division is then examined.
+# The whole number of this reminader identifies which block on the array of blocks for this
+# ring is to be used.
+# The fractional portion after this is the regular UV value that is used by the texture() routine
+# to look up the value on the image.
+#
+func computeUV(worldPos: Vector2) -> Vector2:
+	#
+	# Compute ring position
+	#
+	var factor: Vector2
+	factor = abs(worldPos) / _blockCenterWorldSize
+	var factorFloor = floor(factor)
+	var ringPos: Vector2i
+	if factor.x > 0:
+		ringPos.x = int(log(factorFloor.x) / log(2)) + 1
+	else:
+		ringPos.x = 0
+	if factor.y > 0:
+		ringPos.y = int(log(factorFloor.y) / log(2)) + 1
+	else:
+		ringPos.y = 0
+		
+	var ringPosX: int
+	if ringPos.x > ringPos.y:
+		ringPosX = ringPos.x
+	else:
+		ringPosX = ringPos.y
+	
+	# 
+	# Compute specific terrain map in the array. Ring 0 (the central maps)
+	# will be a steady increasing list of maps where 0, 0 is the upper left.
+	#
+	# The ring array will start from the upper,left as well but skip the central group 
+	# of indexes.
+	#
+	var halfNumBlocksPerSide = _numBlocksPerSide / 2
+	var indexFactor = worldPos / _blockCenterWorldSize + Vector2(halfNumBlocksPerSide, halfNumBlocksPerSide)
+	var index = floor(indexFactor)
+	var indexN = index.y * _numBlocksPerSide + index.x
+	if ringPosX > 0:
+		var adjustY = index.y
+		var adjustAmt = _numBlocksPerSide-2
+		while adjustY >= _numBlocksPerSide+1:
+			indexN -= adjustAmt
+			adjustY -= 1
+	
+	#
+	# The fractional part of the UV is used to reference the actual pixel within the texture.
+	#
+	var ringBlockSize = _blockCenterWorldSize * pow(2, ringPosX)
+	var fractionOfFactor = factor - factorFloor
+	
+	#
+	# Now build final UV result:
+	#   ringPos translates into how much to offset by CHUNK_SIZE
+	#   indexN translates into how many whole number offsets there are within the CHUNK_SIZE
+	#   fractionOfFactor is just added on
+	#
+	var UV = Vector2(CHUNK_SIZE, CHUNK_SIZE) * ringPosX + Vector2(1, 1) * indexN + fractionOfFactor
+	return UV
+
+
+#
+# Now do the reverse of pulling out from the encoded UV generated from the computeUV above
+# into the actual reference into the array of textures for the specific ring and actual UV
+# of the texture referenced into the array. The following code is an example of what the shader
+# should do, not the actual code the shader will call since that is not available within the shader.
+# This code though will be used by the unit tests to verify these computations actually work.
+# 
+class ParseUV:
+	var ringIndex: int
+	var arrayIndex: int
+	var realUV: Vector2
+	
+func parseUV(UV: Vector2) -> ParseUV:
+	var result = ParseUV.new()
+	var ringPos = UV / CHUNK_SIZE
+	result.ringIndex = floor(ringPos)
+	return result
+	
+#	
+# PRIVATE FUNCTIONS
+#
 func _computeBlockPositions():
 	_blocks.clear()
 	var adjust = -_numBlocksPerSide/2
