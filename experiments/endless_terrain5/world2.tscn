@@ -5,7 +5,7 @@
 [ext_resource type="Shader" path="res://terrain/ring/focusRing.gdshader" id="4_5k2qk"]
 [ext_resource type="Texture2D" uid="uid://b3mca6u27xc7t" path="res://icon.svg" id="4_sva8s"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_4hvck"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_vvlv4"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 2, 2, 1e-05),
 "attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -17,7 +17,7 @@ _surfaces = [{
 "vertex_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191)
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3shi2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cb7ue"]
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("4_5k2qk")
@@ -33,8 +33,8 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2, 2)
 
 [node name="focusRing" parent="." instance=ExtResource("3_mc4qr")]
-mesh = SubResource("ArrayMesh_4hvck")
+mesh = SubResource("ArrayMesh_vvlv4")
 skeleton = NodePath("")
-surface_material_override/0 = SubResource("ShaderMaterial_3shi2")
+surface_material_override/0 = SubResource("ShaderMaterial_cb7ue")
 albedo = ExtResource("4_sva8s")
 fullSize = Vector2(2, 2)

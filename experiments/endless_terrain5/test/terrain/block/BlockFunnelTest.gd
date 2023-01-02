@@ -14,6 +14,7 @@ func run():
 				_queryBlocks_verifyBlockWorldPositions(ringPos, blockFactor, pointSizeFactor)
 
 	_computeCenterPoint_verifyRounding()
+	_computeUV_verifySquare()
 
 
 func _queryBlocks_verifyNumCenterBlocksCorrect():
@@ -196,3 +197,68 @@ func _computeCenterPoint_verifyRoundingToULIfOnOutsideLR(bounce: Vector2i):
 	var computedPoint = blockFunnel.computeCenterPoint(Vector2(0, 0), playerPos)
 	# Assert
 	assert(computedPoint == expectedCenterPos)
+
+
+func _computeUV_verifySquare():
+	_computeUV_verifyCenterSquare()
+	_computeUV_verifyRingSquare(1)
+
+
+func _computeUV_verifyCenterSquare():
+	var ringPos = 0
+	var factor = int(pow(2, 2))
+	var sideLen = factor
+	var numBlocks = sideLen * sideLen
+	var blockSize = 50 * pow(2, ringPos)
+	var adjust = Vector2(blockSize / 2, blockSize / 2)
+	for index in range(numBlocks):
+		var y = floor(index / sideLen) - sideLen/2
+		var x = index % sideLen - sideLen/2
+		var worldPos = Vector2(x * blockSize, y * blockSize) + adjust
+		var uvPos = Vector2(0.5, 0.5)
+		_computeUV_verifySquareFor(ringPos, worldPos, index, uvPos, blockSize)
+
+
+func _computeUV_verifyRingSquare(ringPos: int):
+	var N = 2
+	var factor = int(pow(2, N))
+	var sideLen = factor
+	var numBlocks = sideLen * sideLen
+	var blockSize = 50
+	var adjustedBlockSize = blockSize * pow(2, ringPos)
+	var adjust = Vector2(adjustedBlockSize / 2, adjustedBlockSize / 2)
+	var half = sideLen/2
+	var skipStart = half / 2
+	var skipEnd = sideLen - half / 2 
+	var index = 0
+	for y in range(sideLen):
+		for x in range(sideLen):
+			if x < skipStart or y < skipStart or x >= skipEnd or y >= skipEnd:
+				var adjustedX = x - half
+				var adjustedY = y - half
+				var worldPos = Vector2(adjustedX * adjustedBlockSize, adjustedY * adjustedBlockSize) + adjust
+				var uvPos = Vector2(0.5, 0.5)
+				_computeUV_verifySquareFor(ringPos, worldPos, index, uvPos, blockSize)
+				index += 1
+		
+
+func _computeUV_verifySquareFor(ringPos: int, worldPos: Vector2, indexPos: int, uvPos: Vector2, blockSize: int):
+	# Arrange
+	var chunkSize = int(BlockFunnel.CHUNK_SIZE)
+	var params = BlockFunnel.Params.new()
+	params.baseBlockFactor = 2
+	params.ringDepth = 2
+	params.blockPointSizeFactor = 8
+	params.blockCenterWorldSize = blockSize
+	var expectedRingPos = ringPos * Vector2i(chunkSize, chunkSize)
+	var expectedIndexPos = indexPos
+	var expectedUVPos = uvPos
+	var offsetRingPos = ringPos * BlockFunnel.CHUNK_SIZE
+	var expectedEncodedUV = Vector2(expectedRingPos.x, expectedRingPos.y) + Vector2(expectedIndexPos, expectedIndexPos) + expectedUVPos
+	# Act
+	var blockFunnel = BlockFunnel.new(params)
+	var encodedUV = blockFunnel.computeUV(worldPos)
+	# Assert 
+	assert(encodedUV.x == expectedEncodedUV.x)
+	assert(encodedUV.y == expectedEncodedUV.y)
+

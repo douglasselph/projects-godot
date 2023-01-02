@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bftmpmimgegy8" path="res://terrain/ring/focusRing.tscn" id="7_n56et"]
 [ext_resource type="Shader" path="res://terrain/ring/focusRing.gdshader" id="8_2fgrd"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_pr3d6"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_kvmvd"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 1, 1, 1e-05),
 "attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -21,7 +21,7 @@ _surfaces = [{
 "vertex_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 255, 127, 255, 127, 255, 255, 255, 191)
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_xpru3"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8gir4"]
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("8_2fgrd")
@@ -42,8 +42,8 @@ transform = Transform3D(1, 0, 0, 0, 0.85264, 0.522499, 0, -0.522499, 0.85264, 3,
 visible = false
 
 [node name="focusRing" parent="." instance=ExtResource("7_n56et")]
-mesh = SubResource("ArrayMesh_pr3d6")
-surface_material_override/0 = SubResource("ShaderMaterial_xpru3")
+mesh = SubResource("ArrayMesh_kvmvd")
+surface_material_override/0 = SubResource("ShaderMaterial_8gir4")
 
 [node name="CameraFoci3D" parent="." instance=ExtResource("2_mrypd")]
 visible = false

@@ -88,6 +88,7 @@ var numRings: int:
 const CHUNK_SIZE = 100
 
 
+var _baseBlockFactor: int
 var _numBlocksPerSide: int
 var _blockPointSize: int
 var _ringDepth: int
@@ -118,6 +119,7 @@ class Params:
 
 
 func _init(params: Params):
+	_baseBlockFactor = params.baseBlockFactor
 	_numBlocksPerSide = pow(2, params.baseBlockFactor)
 	_blockPointSize = pow(2, params.blockPointSizeFactor)
 	_ringDepth = params.ringDepth
@@ -169,12 +171,17 @@ func computeCenterPoint(gridWorldCenter: Vector2, playerPos: Vector2) -> Vector2
 # on the block the texture lookup should be. This coded format will be much more efficient to
 # figure out which terrain map and position on it to use. The way this works is as follows:
 #
-# The UV value will have a value greater than zero.
+# UV values greater than one will be used to identify which terrain map that fractional part of the UV
+# is to be applied..
 #
-# The whole number value after UV/CHUNK_SIZE identifies which ring the block is on.
+# The whole number value after UV/CHUNK_SIZE identifies which ring the block is on, where ring 0 is 
+# the central group of terrain maps, ring 1 is the first proper outer ring of maps, etc.
+#
 # The remainder of this division is then examined.
+#
 # The whole number of this reminader identifies which block on the array of blocks for this
 # ring is to be used.
+#
 # The fractional portion after this is the regular UV value that is used by the texture() routine
 # to look up the value on the image.
 #
@@ -182,25 +189,26 @@ func computeUV(worldPos: Vector2) -> Vector2:
 	#
 	# Compute ring position
 	#
-	var factor: Vector2
-	factor = abs(worldPos) / _blockCenterWorldSize
+	var halfNumBlocksPerSide = _numBlocksPerSide / 2
+	var unitSquare = _blockCenterWorldSize * halfNumBlocksPerSide
+	var factor = abs(worldPos) / unitSquare
 	var factorFloor = floor(factor)
+	var ringPosX: int
 	var ringPos: Vector2i
-	if factor.x > 0:
-		ringPos.x = int(log(factorFloor.x) / log(2)) + 1
+	if factorFloor.x > 0:
+		ringPos.x = int(floor(log(factorFloor.x) / log(2))) + 1
 	else:
 		ringPos.x = 0
-	if factor.y > 0:
-		ringPos.y = int(log(factorFloor.y) / log(2)) + 1
+
+	if factorFloor.y > 0:
+		ringPos.y = int(floor(log(factorFloor.y) / log(2))) + 1
 	else:
 		ringPos.y = 0
-		
-	var ringPosX: int
+
 	if ringPos.x > ringPos.y:
 		ringPosX = ringPos.x
 	else:
 		ringPosX = ringPos.y
-	
 	# 
 	# Compute specific terrain map in the array. Ring 0 (the central maps)
 	# will be a steady increasing list of maps where 0, 0 is the upper left.
@@ -208,22 +216,31 @@ func computeUV(worldPos: Vector2) -> Vector2:
 	# The ring array will start from the upper,left as well but skip the central group 
 	# of indexes.
 	#
-	var halfNumBlocksPerSide = _numBlocksPerSide / 2
-	var indexFactor = worldPos / _blockCenterWorldSize + Vector2(halfNumBlocksPerSide, halfNumBlocksPerSide)
-	var index = floor(indexFactor)
-	var indexN = index.y * _numBlocksPerSide + index.x
-	if ringPosX > 0:
+	var indexFactor: Vector2
+	var index: Vector2
+	var indexN: float
+	if ringPosX == 0:
+		indexFactor = worldPos / _blockCenterWorldSize + Vector2(halfNumBlocksPerSide, halfNumBlocksPerSide)
+		index = floor(indexFactor)
+		indexN = index.y * _numBlocksPerSide + index.x
+	else:
+		indexFactor = worldPos / unitSquare + Vector2(halfNumBlocksPerSide, halfNumBlocksPerSide)
+		index = floor(indexFactor)
+		indexN = index.y * _numBlocksPerSide + index.x
 		var adjustY = index.y
-		var adjustAmt = _numBlocksPerSide-2
-		while adjustY >= _numBlocksPerSide+1:
+		var triggerStart = halfNumBlocksPerSide/2
+		var triggerEnd = _numBlocksPerSide-halfNumBlocksPerSide/2
+		while index.x > adjustAmt:
 			indexN -= adjustAmt
-			adjustY -= 1
+			index.x -= 1
+		while index.y > adjustAmt:
+			indexN -= adjustAmt
+			index.y -= 1
 	
 	#
 	# The fractional part of the UV is used to reference the actual pixel within the texture.
 	#
-	var ringBlockSize = _blockCenterWorldSize * pow(2, ringPosX)
-	var fractionOfFactor = factor - factorFloor
+	var fractionOfFactor = indexFactor - index
 	
 	#
 	# Now build final UV result:
@@ -250,7 +267,13 @@ class ParseUV:
 func parseUV(UV: Vector2) -> ParseUV:
 	var result = ParseUV.new()
 	var ringPos = UV / CHUNK_SIZE
-	result.ringIndex = floor(ringPos)
+	var ringPosFloor = floor(ringPos)
+	var ringPosFrac = ringPos - ringPosFloor
+	var arrayIndex = floor(ringPosFrac)
+	var arrayIndexFrac = ringPosFrac - arrayIndex
+	result.ringIndex = int(ringPosFloor.x)
+	result.arrayIndex = int(arrayIndex.x)
+	result.realUV = arrayIndexFrac
 	return result
 	
 #	
