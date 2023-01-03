@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://terrain/ring/focusRing.gd" id="1_7ctl6"]
 [ext_resource type="Shader" path="res://terrain/ring/focusRing.gdshader" id="1_xblmv"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_wbkgn"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_7p6hn"]
 _surfaces = [{
 "aabb": AABB(0, 0, 0, 1, 1, 1e-05),
 "attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -21,7 +21,7 @@ render_priority = 0
 shader = ExtResource("1_xblmv")
 
 [node name="focusRing" type="MeshInstance3D"]
-mesh = SubResource("ArrayMesh_wbkgn")
+mesh = SubResource("ArrayMesh_7p6hn")
 surface_material_override/0 = SubResource("ShaderMaterial_nnflm")
 script = ExtResource("1_7ctl6")
 fullSize = Vector2(1, 1)

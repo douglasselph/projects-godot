@@ -202,6 +202,7 @@ func _computeCenterPoint_verifyRoundingToULIfOnOutsideLR(bounce: Vector2i):
 func _computeUV_verifySquare():
 	_computeUV_verifyCenterSquare()
 	_computeUV_verifyRingSquare(1)
+	_computeUV_verifyRingSquare(2)
 
 
 func _computeUV_verifyCenterSquare():
@@ -261,4 +262,10 @@ func _computeUV_verifySquareFor(ringPos: int, worldPos: Vector2, indexPos: int, 
 	# Assert 
 	assert(encodedUV.x == expectedEncodedUV.x)
 	assert(encodedUV.y == expectedEncodedUV.y)
+	
+	# Now do additional check with REVERSE step (this code will be done in the shader)
+	var decoded = blockFunnel.parseUV(encodedUV)
+	assert(decoded.ringIndex == ringPos)
+	assert(decoded.arrayIndex == indexPos)
+	assert(decoded.realUV == uvPos)
 

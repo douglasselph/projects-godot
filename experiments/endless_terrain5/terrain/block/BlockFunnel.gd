@@ -224,19 +224,25 @@ func computeUV(worldPos: Vector2) -> Vector2:
 		index = floor(indexFactor)
 		indexN = index.y * _numBlocksPerSide + index.x
 	else:
+		unitSquare = _blockCenterWorldSize * pow(2, ringPosX)
 		indexFactor = worldPos / unitSquare + Vector2(halfNumBlocksPerSide, halfNumBlocksPerSide)
 		index = floor(indexFactor)
 		indexN = index.y * _numBlocksPerSide + index.x
 		var adjustY = index.y
 		var triggerStart = halfNumBlocksPerSide/2
 		var triggerEnd = _numBlocksPerSide-halfNumBlocksPerSide/2
-		while index.x > adjustAmt:
-			indexN -= adjustAmt
-			index.x -= 1
-		while index.y > adjustAmt:
-			indexN -= adjustAmt
-			index.y -= 1
-	
+		var skip = range(triggerStart, triggerEnd)
+		var skipIndex = []
+		for y in skip:
+			for x in skip:
+				skipIndex.append(y * _numBlocksPerSide + x)
+		var reduce = 0
+		for skipI in skipIndex:
+			if indexN > skipI:
+				reduce += 1
+			else:
+				break
+		indexN -= reduce
 	#
 	# The fractional part of the UV is used to reference the actual pixel within the texture.
 	#
@@ -258,6 +264,11 @@ func computeUV(worldPos: Vector2) -> Vector2:
 # of the texture referenced into the array. The following code is an example of what the shader
 # should do, not the actual code the shader will call since that is not available within the shader.
 # This code though will be used by the unit tests to verify these computations actually work.
+#
+# The whole point of the encoded UV is to so the following code can be used in the shader which
+# will be a lot simpler to figure out which texture map to use the UV on. That is, the parseUV()
+# function can be used directly within the shader, but the computeUV() function cannot (because
+# it needs too much other data to make it work).
 # 
 class ParseUV:
 	var ringIndex: int
@@ -266,14 +277,13 @@ class ParseUV:
 	
 func parseUV(UV: Vector2) -> ParseUV:
 	var result = ParseUV.new()
-	var ringPos = UV / CHUNK_SIZE
-	var ringPosFloor = floor(ringPos)
-	var ringPosFrac = ringPos - ringPosFloor
-	var arrayIndex = floor(ringPosFrac)
-	var arrayIndexFrac = ringPosFrac - arrayIndex
-	result.ringIndex = int(ringPosFloor.x)
-	result.arrayIndex = int(arrayIndex.x)
-	result.realUV = arrayIndexFrac
+	var wholeUV = floor(UV)
+	var frac = UV - wholeUV
+	var ringPos = floor(wholeUV / CHUNK_SIZE)
+	var indexPos = wholeUV - ringPos * CHUNK_SIZE
+	result.ringIndex = int(ringPos.x)
+	result.arrayIndex = int(indexPos.x)
+	result.realUV = frac
 	return result
 	
 #	
